@@ -1,8 +1,6 @@
-This is "GNU accepted" -- little console program to aid shell scripts in probing user confirmation to continue.
+This is "accepted" -- little console program to aid shell scripts in probing user confirmation to continue.
 
-
-https://github.com/xsub/accepted
-
+This software is dual licensed under BSD or GPL version 2;
 
 Compilation:
 
