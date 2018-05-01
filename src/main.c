@@ -2,7 +2,7 @@
 
 This software is dual licensed under BSD or GPL version 2;
 As user you may select either version 2 of the GNU General Public License 
-("GPL") or BSD license ("BSD"). 
+("GPL") or BSD license ("BSD"). This code is targetted to BSD & GNU/Linux.
 
 SRC URI: https://github.com/xsub/accepted
 
@@ -26,6 +26,12 @@ The +IC prefix to +IC"yes i want it" command line argument "Ignores Case" for th
 Update: the program_mode related code introduces conditional program execution:
 if the code is run as binary named `rejected` the above logic gets inversed. 
 
+TODO:
+ 1. Add command line flags:
+   a) --std-yes = +IC"y" +IC"yes" +IC"yep" +IC"yeah"
+   b) --std-no  = +IC"n" +IC"no" +IC"nah" +IC"nope"
+
+
 */
 
 #include <config.h>
@@ -33,8 +39,8 @@ if the code is run as binary named `rejected` the above logic gets inversed.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-/* Linux man for queue(3): "Not in POSIX.1-2001. Present on the BSDs. The queue functions first appeared in 4.4BSD."*/
+/* Linux man for queue(3): "Not in POSIX.1-2001. Present on the BSDs. 
+   The queue functions first appeared in 4.4BSD." */
 #include <sys/queue.h>
 
 
