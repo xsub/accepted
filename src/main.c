@@ -23,6 +23,7 @@ combination of lower and upper case letters is allowed.
 */
 
 #include <config.h>
+#include <libgen.h>,
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -34,7 +35,9 @@ combination of lower and upper case letters is allowed.
 const int ACCEPTED = EXIT_SUCCESS;
 const int REJECTED = EXIT_FAILURE;
 const char *delims = " ";
+const int FILENAME_MAX_LEN = 32;
 
+int program_type = 0x1337; // means unset
 
 struct entry {
     char *str_ptr;
@@ -53,6 +56,16 @@ void parse_option (char *t) {
 
 int main (int argc, char **argv)
 {
+
+  // The operation mode (program_type) depends on binary name: check the actual file name
+  char binary_name[FILENAME_MAX_LEN];
+  strncpy(binary_name, basename(argv[0]), FILENAME_MAX_LEN);
+
+  if (!strcmp(binary_name, "accepted")) { program_type = ACCEPTED; }
+  else if (!strcmp(binary_name, "rejected")) { program_type = REJECTED; } 
+
+  printf ("Program type (operation mode): %s\n", (ACCEPTED == program_type) ? "accepted" : "rejected");
+
   // no args provided, no answer can be accepting
   if (argc < 2) {
     exit (REJECTED);
