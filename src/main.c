@@ -53,7 +53,7 @@
 const int ACCEPTED = EXIT_SUCCESS;
 const int REJECTED = EXIT_FAILURE;
 const char *delims = " ";
-const int FILENAME_MAX_LEN = 32;
+const int FILENAME_MAX_LEN = 8;
 
 int program_type = 0x1337;	// means unset
 
@@ -127,13 +127,15 @@ cleanup (void)
 {
   while (accept_list_head.lh_first != NULL)
     {
-
+#if DEBUG_ON      
+      printf("%s: token: %s\n", __func__, accept_list_head.lh_first->token);
+#endif
       LIST_REMOVE (accept_list_head.lh_first, entries);
     }
   while (reject_list_head.lh_first != NULL)
     LIST_REMOVE (reject_list_head.lh_first, entries);
 #if DEBUG_ON
-  puts ("Cleanup done.");
+  puts ("cleanup: done.");
 #endif
 }
 
@@ -192,7 +194,7 @@ main (int argc, char **argv)
       char *token = argv[arg_id];
 
 #if DEBUG_ON
-      printf ("%s, processing token: '%s'\n", __func__, token);
+      printf ("%s: processing token: '%s'\n", __func__, token);
 #endif
 
       if ('+' == token[0])
