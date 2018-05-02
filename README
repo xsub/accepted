@@ -31,12 +31,21 @@ As default:
 
 'rejected' expects '--std-no' strings or strings added with '-' as arguments to return REJECTED, otherwise it returns ACCEPTED. 
 
+There is a way to define case insensitive strings as parts of answer list by using 'IC' prefix and
+quotation marks, like: +IC"<string>" or -IC"<string>";
+
+Example:
+
+   accepted -IC"no, I *DO NOT* want to do it"   
+
+This makes the string 'no, i *do not* want to do it' the valid negating answer, disregarding it's case.
+
 
 Example usage (in Bash-like script)
 -----------------------------------
 
 bash$ read "Do you want to do_it (answer 'yes' to confirm)? " answer
-bash$ [ accepted -yes $answer] && do_it
+bash$ [ accepted +yes $answer] && do_it
 
 
 
@@ -51,9 +60,14 @@ make
 TODO
 ----
 
-0. --stdyes, --stdno
+1. Add flags --std-yes, --std-no, --stdyes, --stdno
 
-1. Solo-operation mode (doing actual prompt in accepted/rejected code).
+ *
+ * --std-yes = +IC"y" +IC"yes"
+ * +IC"yep" +IC"yeah" b) --std-no = -IC"n" -IC"no" -IC"nah" -IC"nope" (((
+ *
+
+2. Solo-operation mode (doing actual prompt in accepted/rejected code).
 
 Example 1.
 [ accepted --S --strict --stdmin "Do you want to" ] && do_it

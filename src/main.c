@@ -29,10 +29,6 @@
  * Update: the program_mode related code introduces conditional program
  * execution: if the code is run as binary named `rejected` the above
  * logic gets inversed.
- *
- * TODO: 1. Add command line flags: a) --std-yes = +IC"y" +IC"yes"
- * +IC"yep" +IC"yeah" b) --std-no = +IC"n" +IC"no" +IC"nah" +IC"nope" (((
- *
  */
 
 #include <config.h>
