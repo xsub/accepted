@@ -31,12 +31,11 @@ As default:
 
 'rejected' expects '--std-no' strings or strings added with '-' as arguments to return REJECTED, otherwise it returns ACCEPTED. 
 
-There is a way to define case insensitive strings as parts of answer list by using 'IC' prefix and
-quotation marks, like: +IC"<string>" or -IC"<string>";
+There is a way to define case insensitive strings as parts of answer list by using 'IC' prefix and quotation marks, like: +IC"<string>" or -IC"<string>";
 
 Example:
 
-   accepted -IC"no, I *DO NOT* want to do it"   
+	bash$ accepted -IC"no, I *DO NOT* want to do it"   
 
 This makes the string 'no, i *do not* want to do it' the valid negating answer, disregarding it's case.
 
@@ -44,8 +43,8 @@ This makes the string 'no, i *do not* want to do it' the valid negating answer, 
 Example usage (in Bash-like script)
 -----------------------------------
 
-bash$ read "Do you want to do_it (answer 'yes' to confirm)? " answer
-bash$ [ accepted +yes $answer] && do_it
+	bash$ read "Do you want to do_it (answer 'yes' to confirm)? " answer
+	bash$ [ accepted +yes $answer] && do_it
 
 
 
@@ -62,19 +61,22 @@ TODO
 
 1. Add flags --std-yes, --std-no, --stdyes, --stdno
 
- *
- * --std-yes = +IC"y" +IC"yes"
- * +IC"yep" +IC"yeah" b) --std-no = -IC"n" -IC"no" -IC"nah" -IC"nope" (((
- *
+ a) --std-yes = +IC"y" +IC"yes" +IC"yep" +IC"yeah" 
+ b) --std-no  = -IC"n" -IC"no" -IC"nah" -IC"nope"
+ 
 
 2. Solo-operation mode (doing actual prompt in accepted/rejected code).
 
 Example 1.
-[ accepted --S --strict --stdmin "Do you want to" ] && do_it
+
+	bash$ [ accepted --S --strict --stdmin "Do you want to" ] && do_it
+
 Will render to console: "Do you want to (y/n)? " and accept 'y', 'Y', 'n', 'N' as valid input.
 
 Example 2.
-[ accepted --S --strict --stdmax "Do you want to" ] && do_it
+	
+	bash$ [ accepted --S --strict --stdmax "Do you want to" ] && do_it
+
 Will render to console: "Do you want to (y/n/yes/no/yup/nah/yeah/nope)? " and accept any of showed answers, ignoring case.
 
 
