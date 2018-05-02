@@ -31,6 +31,9 @@
  * logic gets inversed.
  */
 
+#define DEBUG_ON (1)
+
+
 #include <config.h>
 #include <libgen.h>
 #include <stdio.h>
@@ -63,8 +66,10 @@ struct entry
     LIST_ENTRY (entry) entries;
 } *np;
 
-LIST_HEAD (accept_head, entry) accept_list_head;
-LIST_HEAD (reject_head, entry) reject_list_head;
+LIST_HEAD (accept_head, entry) accept_list_head =
+LIST_HEAD_INITIALIZER (accept_list_head);
+LIST_HEAD (reject_head, entry) reject_list_head =
+LIST_HEAD_INITIALIZER (reject_list_head);
 
      struct accept_head *accept_list_head_ptr;
      struct rejct_head *reject_list_head_ptr;
@@ -76,7 +81,9 @@ LIST_HEAD (reject_head, entry) reject_list_head;
 
   if (new_el_ptr)
     {
-      np->token = token;
+      new_el_ptr->token = token;
+//#if DEBUG_O
+      printf ("%s: allocation for token: %s, length: %d\n", __func__, token, (int) 0);	//strlen(token));
     }
   else
     {
@@ -88,8 +95,9 @@ LIST_HEAD (reject_head, entry) reject_list_head;
 void
 add_accepted (char *token)
 {
+  printf ("%s: token: %s,\n", __func__, token);
   struct entry *new_el_ptr = alloc_element (token);
-  LIST_INSERT_HEAD (accept_list_head_ptr, new_el_ptr, entries);
+  LIST_INSERT_HEAD (&accept_list_head, new_el_ptr, entries);
 }
 
 void
@@ -118,7 +126,10 @@ void
 cleanup (void)
 {
   while (accept_list_head.lh_first != NULL)
-    LIST_REMOVE (accept_list_head.lh_first, entries);
+    {
+
+      LIST_REMOVE (accept_list_head.lh_first, entries);
+    }
   while (reject_list_head.lh_first != NULL)
     LIST_REMOVE (reject_list_head.lh_first, entries);
 #if DEBUG_ON
@@ -167,6 +178,7 @@ main (int argc, char **argv)
   /* Init list data */
   LIST_INIT (&accept_list_head);
   LIST_INIT (&reject_list_head);
+
   /* register cleanup */
   atexit (cleanup);
 
@@ -177,10 +189,10 @@ main (int argc, char **argv)
   short arg_id = 1;
   while (arg_id < argc)
     {
-      char *token = argv[arg_id++];
+      char *token = argv[arg_id];
 
 #if DEBUG_ON
-      printf ("Processing token: '%s'\n", token);
+      printf ("%s, processing token: '%s'\n", __func__, token);
 #endif
 
       if ('+' == token[0])
@@ -195,6 +207,8 @@ main (int argc, char **argv)
 	{
 	  parse_option (token);
 	}
+
+      arg_id++;
     }
 
 cleanup:
