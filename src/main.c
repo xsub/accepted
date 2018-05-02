@@ -87,7 +87,19 @@ void add_accepted(char *token) {
 
 void add_rejected(char *token) {}
 
-void parse_option(char *t) {}
+void parse_option(char *t) {
+  // print version
+  if (!strcmp(t, "--version")) {
+    puts("This is " PACKAGE_STRING ".");
+    exit(EXIT_SUCCESS);
+  }
+
+  if (!strcmp(t, "--help"))
+  {
+        puts ("Usage: WIP");
+        exit(EXIT_SUCCESS);
+  }
+}
 
 int main(int argc, char **argv) {
 
@@ -116,11 +128,6 @@ int main(int argc, char **argv) {
       exit(ACCEPTED);
     }
   }
-  // print version
-  if (!strcmp(argv[1], "--version")) {
-    puts("This is " PACKAGE_STRING ".");
-    exit(EXIT_SUCCESS);
-  }
 
 
   /* Init data */ 
@@ -134,11 +141,13 @@ int main(int argc, char **argv) {
   while (arg_id < argc) {
     char *token = argv[arg_id++];
 
+#if DEBUG_ON
     printf("Processing token: '%s'\n", token);
+#endif 
 
     if ('+' == token[0]) {
       add_accepted(argv[arg_id]);
-    } else if ('-' == token[0]) {
+    } else if ('-' == token[0] && '-' != token[1]) {
       add_rejected(argv[arg_id]);
     } else {
       parse_option(token);
