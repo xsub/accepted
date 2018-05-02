@@ -35,25 +35,26 @@
 
 
 #include <config.h>
+#include <getopt.h>
 #include <libgen.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-/*
- * strings.h for srtcasecmp(const char *s1, const char *s2) defined in
+/* strings.h for srtcasecmp(const char *s1, const char *s2) defined in
  * XPG4.
  */
 #include <strings.h>
-/*
- * Linux man for queue(3): "Not in POSIX.1-2001. Present on the BSDs. The
- * queue functions first appeared in 4.4BSD."
- */
+#include <unistd.h>		// for getopt_long_only() not defined in getopt.h
+
+ /* Linux man for queue(3): "Not in POSIX.1-2001. Present on the BSDs. The
+  * queue functions first appeared in 4.4BSD."
+  */
 #include <sys/queue.h>
 
 const int ACCEPTED = EXIT_SUCCESS;
 const int REJECTED = EXIT_FAILURE;
 const char *delims = " ";
-const int FILENAME_MAX_LEN = 8;
+const int FILENAME_MAX_LEN = 32;
 
 int program_type = 0x1337;	// means unset
 
@@ -106,20 +107,83 @@ add_rejected (char *token)
 }
 
 void
+version_exit ()
+{
+  puts ("This is " PACKAGE_STRING ".");
+  exit (EXIT_SUCCESS);
+}
+
+void
+help_exit ()
+{
+  puts ("Usage: WIP");
+  exit (EXIT_SUCCESS);
+}
+
+void
 parse_option (char *t)
 {
   // print version
   if (!strcmp (t, "--version"))
     {
-      puts ("This is " PACKAGE_STRING ".");
-      exit (EXIT_SUCCESS);
+      version_exit ();
     }
 
   if (!strcmp (t, "--help"))
     {
-      puts ("Usage: WIP");
-      exit (EXIT_SUCCESS);
+      help_exit ();
     }
+
+  if (!strcmp (t, "--S") || !strcmp (t, "--single"))
+    {
+      puts ("ERROR: Solo-mode *NOT* implemented (yet)");
+      exit (EXIT_FAILURE);
+    }
+}
+
+
+void
+parse_option_getopt_long (char **argv)
+{
+#if DEBUG_ON
+  printf ("%s: token to process: %s\n", __func__, *argv);
+#endif
+
+  static struct option long_options[] = {
+    {"version", no_argument, 0, 'v'},
+    {"help", no_argument, 0, 'h'},
+    //   {"stdyes", no_argument, 0, 'y'},
+    //   {"std-yes", no_argument, 0, 'Y' },
+    //   {"stdno", no_argument, 0, 'n' },
+    //   {"std-no", no_argument, 0, 'N' },
+    {0, 0, 0, 0}
+  };
+
+  int long_index = 0;
+  int opt = getopt_long_only (1, argv, "", long_options, &long_index);
+  if (opt != -1)
+    {
+      switch (opt)
+	{
+	case 'v':
+	  version_exit ();	// never returns
+	case 'h':
+	  help_exit ();		// same
+	  /*case 'l' : length = atoi(optarg); 
+	     break;
+	     case 'b' : breadth = atoi(optarg);
+	     break; */
+	default:
+	  help_exit ();
+	}
+    }
+#if DEBUG_ON
+  else
+    {
+      printf ("%s: getopt_long_only() failed with result = %d\n", __func__,
+	      opt);
+    }
+#endif
 }
 
 void
@@ -127,15 +191,13 @@ cleanup (void)
 {
   while (accept_list_head.lh_first != NULL)
     {
-#if DEBUG_ON      
-      printf("%s: token: %s\n", __func__, accept_list_head.lh_first->token);
-#endif
+
       LIST_REMOVE (accept_list_head.lh_first, entries);
     }
   while (reject_list_head.lh_first != NULL)
     LIST_REMOVE (reject_list_head.lh_first, entries);
 #if DEBUG_ON
-  puts ("cleanup: done.");
+  puts ("Cleanup done.");
 #endif
 }
 
@@ -194,7 +256,7 @@ main (int argc, char **argv)
       char *token = argv[arg_id];
 
 #if DEBUG_ON
-      printf ("%s: processing token: '%s'\n", __func__, token);
+      printf ("%s, processing token: '%s'\n", __func__, token);
 #endif
 
       if ('+' == token[0])
@@ -207,7 +269,8 @@ main (int argc, char **argv)
 	}
       else
 	{
-	  parse_option (token);
+	  //parse_option (token);
+	  parse_option_getopt_long (&(argv[arg_id]));	// pass pointer to array
 	}
 
       arg_id++;
