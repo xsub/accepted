@@ -1,3 +1,11 @@
+#!/usr/bin/env bash
+
+git status -uno
+read -p "Do yo want to continue the $0? " a
+
+# TODO: once --help (or --version) works again change introduce the the binary check after make test
+# i.e.:
+# make && ./src/accepted --help && (
 
  make && (
 ./scripts/indent.sh
