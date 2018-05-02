@@ -31,8 +31,6 @@
  * logic gets inversed.
  */
 
-#define DEBUG_ON (1)
-
 #include <config.h>
 #include <getopt.h>
 #include <libgen.h>
