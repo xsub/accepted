@@ -1,22 +1,38 @@
-(c)2018 Pawel.Suchanecki@gmail.com (xsub)
+(c) 2018 Pawel.Suchanecki@gmail.com (xsub)
+
 
 Brief
 -----
-This is "accepted/rejected" - little console program (duo) to aid shell scripts in probing user confirmations (acceptances/rejections).
+This is "accepted" - tiny console program to aid shell scripts in probing user confirmations.
+
 
 Licenses:
 ---------
 This software is dual licensed under BSD or GPL version 2;
 
+
 Overview
 --------
-With no --strict `accepted` expectes --stdyes strings or strings added with '+' prefix as arguments this results in returning ACCEPTED.
-Any not listed string get REJECTED. 'rejected' expect --stdyes or strings added with '-' as arguemnts to return REJECTED, otherwise if no --strict applied it returns ACCEPTED. 
+This program comes as one binary buts gets hardlinked to another instance called 'rejected' on installation.
+
+Both program take list of strings being list of allowed answers and string user already entered on prompt.
+Program tests the user input agains the lists of accepting and rejecting asnwers and returns respective
+exit code to the system (the calling shell). Flags modify the profile of operation. 
+Behaviour changes depending on binary name making 'accepted' wait for postive and 'rejected' for negative answers (strings representing accepting and rejecting answers).
+
+
+More
+----
+
+As default:
+
+'accepted' expects '--std-yes' strings or strings added with '+' prefix as arguments, if user input matches any of them the program exit code is ACCEPTED, othwerise exits with REJECTED. 
+
+'rejected' expects '--std-no' strings or strings added with '-' as arguments to return REJECTED, otherwise it returns ACCEPTED. 
 
 
 Example usage (in Bash-like script)
 -----------------------------------
-
 
 bash$ read "Do you want to do_it (answer 'yes' to confirm)? " answer
 bash$ [ accepted -yes $answer] && do_it
@@ -31,9 +47,7 @@ autoreconf --install
 make
 
 
-
-
-TODO:
+TODO
 ----
 
 0. --stdyes, --stdno
@@ -50,7 +64,11 @@ Will render to console: "Do you want to (y/n/yes/no/yup/nah/yeah/nope)? " and ac
 
 
 
+Options
+-------
+
 --S: 		solo-operation: no need to do 'read' and pass the answer, aditionally the passed prompt is printed with all variants of answers.
+
 --strict:	this makes the input prompt accept only listed strings.
 
 
