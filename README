@@ -8,16 +8,17 @@ This is "accepted" - tiny console program to aid shell scripts in probing user c
 
 Licenses:
 ---------
-This software is dual licensed under BSD or GPL version 2;
+This software is dual licensed under BSD or GPL version 2.
 
 
 Overview
 --------
-This program comes as one binary buts gets hardlinked to another instance called 'rejected' on installation.
+This program comes as one binary 'accepted' buts gets hardlinked to another instance called 'rejected' on installation.
 
-Both program take list of strings being list of allowed answers and string user already entered on prompt.
-Program tests the user input agains the lists of accepting and rejecting asnwers and returns respective
-exit code to the system (the calling shell). Flags modify the profile of operation. 
+Both program take list of strings (forming the list of allowed answers) and string user already entered on prompt as answer.
+
+Program compares the user input string against the lists of accepting and rejecting answers and returns respective exit code to the calling shell. Flags are intended to modify the profile of operation.
+
 Behaviour changes depending on binary name making 'accepted' wait for postive and 'rejected' for negative answers (strings representing accepting and rejecting answers).
 
 
