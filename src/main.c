@@ -107,8 +107,10 @@ int main(int argc, char **argv) {
     program_type = REJECTED;
   }
 
+#if DEBUG_ON
   printf("Program type (operation mode): %s\n",
          (ACCEPTED == program_type) ? "accepted" : "rejected");
+#endif
 
   // no args provided, no answer can be accepting
   if (argc < 2) {
