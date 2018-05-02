@@ -1,9 +1,8 @@
-2018 Pawel Suchanecki
+(c)2018 Pawel.Suchanecki@gmail.com (xsub)
 
 Brief
 -----
-This is "accepted/rejected" -- little console program (duo) to aid shell scripts in probing user confirmations.
-
+This is "accepted/rejected" - little console program (duo) to aid shell scripts in probing user confirmations (acceptances/rejections).
 
 Licenses:
 ---------
