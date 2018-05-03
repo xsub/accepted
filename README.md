@@ -31,7 +31,7 @@ As default:
 
 There is a way to define case insensitive strings as parts of answer list by using 'IC' prefix and quotation marks, like: *+IC"<string>"* or *-IC"<string>"*.
 
-Example:
+> Example:
 
 ```
 bash$ accepted -IC"no, I *DO NOT* want to do it"   
@@ -73,7 +73,7 @@ TODO
 
 - [ ] Solo-operation mode (doing actual prompt in accepted/rejected code).
 
-Example 1.
+> Example 1.
 ```
 bash$ [ accepted --S --strict --stdmin "Do you want to" ] && do_it
 ```
@@ -87,7 +87,7 @@ Do you want to (y/n)?
 and accept 'y', 'Y', 'n', 'N' as valid input.
 
 
-Example 2.
+> Example 2.
 
 ```	
 bash$ [ accepted --S --strict --stdmax "Do you want to" ] && do_it
