@@ -5,9 +5,9 @@ Brief
 **This is `accepted` -- tiny console program to aid shell scripts in probing user confirmations.**
 
 
-Licenses
+License
 ---
-This software is dual licensed under BSD or GPL version 2.
+This software is licensed under MIT license.
 
 
 Overview
