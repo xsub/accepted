@@ -4,7 +4,8 @@ FILES="src/main.c"
 TOOL="clang-format"
 TOOL_OPT="-i"
 
-if [ ! "$TOOL --version" ]
+which $TOOL
+if [ $? -ne 0 ]
 then
     TOOL="indent"
     TOOL_OPT=""
