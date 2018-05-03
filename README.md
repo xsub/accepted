@@ -2,17 +2,17 @@
 
 
 ## Brief
------
+----
 This is "accepted" - tiny console program to aid shell scripts in probing user confirmations.
 
 
 ## Licenses:
----------
+----
 This software is dual licensed under BSD or GPL version 2.
 
 
 ## Overview
---------
+----
 This program comes as one binary 'accepted' buts gets hardlinked to another instance called 'rejected' on installation.
 
 Both program take list of strings (forming the list of allowed answers) and string user already entered on prompt as answer.
@@ -22,7 +22,7 @@ Program compares the user input string against the lists of accepting and reject
 Behaviour changes depending on binary name making 'accepted' wait for postive and 'rejected' for negative answers (strings representing accepting and rejecting answers).
 
 
-##More
+## More
 ----
 
 As default:
@@ -41,7 +41,7 @@ This makes the string 'no, i *do not* want to do it' the valid negating answer, 
 
 
 Example usage (in Bash-like script)
------------------------------------
+----
 ```
 bash$ read "Do you want to do_it (answer 'yes' to confirm)? " answer
 bash$ [ accepted +yes $answer] && do_it
@@ -68,10 +68,15 @@ TODO
 2. Solo-operation mode (doing actual prompt in accepted/rejected code).
 
 Example 1.
+```
+bash$ [ accepted --S --strict --stdmin "Do you want to" ] && do_it
+```
+Will render to console: 
+```
+Do you want to (y/n)? "
+```
+and accept 'y', 'Y', 'n', 'N' as valid input.
 
-	bash$ [ accepted --S --strict --stdmin "Do you want to" ] && do_it
-
-Will render to console: "Do you want to (y/n)? " and accept 'y', 'Y', 'n', 'N' as valid input.
 
 Example 2.
 	
