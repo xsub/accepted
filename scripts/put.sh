@@ -8,6 +8,14 @@ read -p "Do yo want to continue the $0? " a
 # make && ./src/accepted --help && (
 
  make && (
+ln -s src/accepted rejected
+./rejected 
+if [ $? -ne -0 ];
+then
+	echo "running rejected with no prams did not return EXIT_SUCCESS (0), aborting..."
+	exit
+fi
+rm -f ./rejected
 ./scripts/indent.sh
 ./scripts/test.sh
 read -p "review test results... commit?"
