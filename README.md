@@ -1,17 +1,16 @@
-### (c) 2018 Pawel.Suchanecki@gmail.com (xsub)
 
 
-## Brief
+Brief
 ---
 **This is `accepted` -- tiny console program to aid shell scripts in probing user confirmations.**
 
 
-## Licenses
+Licenses
 ---
 This software is dual licensed under BSD or GPL version 2.
 
 
-## Overview
+Overview
 ---
 This program comes as one binary `accepted` buts gets hardlinked to another instance called `rejected` on installation.
 
@@ -22,7 +21,7 @@ Program compares the user input string against the lists of accepting and reject
 Behaviour changes depending on binary name making `accepted` wait for postive and `rejected` for negative answers (strings representing accepting and rejecting answers).
 
 
-## More
+More
 ----
 As default:
 
@@ -44,8 +43,6 @@ Example usage (in Bash-like script)
 ```
 bash$ read "Do you want to do_it (answer 'yes' to confirm)? " answer
 bash$ [ accepted +yes $answer] && do_it
-```
-
 
 Compilation
 ----
@@ -98,4 +95,6 @@ Options
 
 --strict:	this makes the input prompt accept only listed strings.
 
+
+### (c) 2018 Pawel.Suchanecki@gmail.com (xsub)
 
