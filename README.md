@@ -13,13 +13,13 @@ This software is dual licensed under BSD or GPL version 2.
 
 ## Overview
 ----
-This program comes as one binary 'accepted' buts gets hardlinked to another instance called 'rejected' on installation.
+This program comes as one binary `accepted` buts gets hardlinked to another instance called `rejected` on installation.
 
 Both program take list of strings (forming the list of allowed answers) and string user already entered on prompt as answer.
 
 Program compares the user input string against the lists of accepting and rejecting answers and returns respective exit code to the calling shell. Flags are intended to modify the profile of operation.
 
-Behaviour changes depending on binary name making 'accepted' wait for postive and 'rejected' for negative answers (strings representing accepting and rejecting answers).
+Behaviour changes depending on binary name making `accepted` wait for postive and `rejected` for negative answers (strings representing accepting and rejecting answers).
 
 
 ## More
@@ -27,9 +27,9 @@ Behaviour changes depending on binary name making 'accepted' wait for postive an
 
 As default:
 
-'accepted' expects '--std-yes' strings or strings added with '+' prefix as arguments, if user input matches any of them the program exit code is ACCEPTED, othwerise exits with REJECTED. 
+`accepted` expects '--std-yes' strings or strings added with '+' prefix as arguments, if user input matches any of them the program exit code is ACCEPTED, othwerise exits with REJECTED. 
 
-'rejected' expects '--std-no' strings or strings added with '-' as arguments to return REJECTED, otherwise it returns ACCEPTED. 
+`rejected` expects '--std-no' strings or strings added with '-' as arguments to return REJECTED, otherwise it returns ACCEPTED. 
 
 There is a way to define case insensitive strings as parts of answer list by using 'IC' prefix and quotation marks, like: +IC"<string>" or -IC"<string>";
 
@@ -71,7 +71,7 @@ Example 1.
 ```
 bash$ [ accepted --S --strict --stdmin "Do you want to" ] && do_it
 ```
-Will render to console: 
+renders to console: 
 ```
 Do you want to (y/n)? 
 ```
@@ -82,7 +82,7 @@ Example 2.
 ```	
 bash$ [ accepted --S --strict --stdmax "Do you want to" ] && do_it
 ```
-Will render to console: 
+renders to console: 
 ```
 Do you want to (y/n/yes/no/yup/nah/yeah/nope)?
 ``` 
