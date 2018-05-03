@@ -126,13 +126,15 @@ static struct option long_options[] = {{"version", no_argument, 0, 'v'},
                                        //   {"std-no", no_argument, 0, 'N' },
                                        {0, 0, 0, 0}};
 
-void parse_option_getopt_long(char **argv) {
+void parse_option_getopt_long(char **argv, int item_to_parse_idx) {
 #if DEBUG_ON
-  printf("%s: token to process: %s\n", __func__, *argv);
+  printf("%s: token to process: %s\n", __func__, argv[item_to_parse_idx]);
 #endif
 
   int long_index = 0;
-  int opt = getopt_long_only(1, argv, "", long_options, &long_index);
+  // extern int optind;
+  // optind = 2;
+  int opt = getopt_long_only(1, argv, "", long_options, &item_to_parse_idx);
   if (opt != -1) {
     switch (opt) {
     case 'v':
@@ -218,7 +220,9 @@ int main(int argc, char **argv) {
       add_rejected(argv[arg_id]);
     } else {
       // parse_option (token);
-      parse_option_getopt_long(&(argv[arg_id])); // pass pointer to array
+      // parse_option_getopt_long(&(argv[arg_id])); // pass pointer to array
+
+      parse_option_getopt_long(argv, arg_id);
     }
 
     arg_id++;
