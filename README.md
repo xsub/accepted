@@ -32,6 +32,7 @@ As default:
 There is a way to define case insensitive strings as parts of answer list by using 'IC' prefix and quotation marks, like: *+IC"<string>"* or *-IC"<string>"*.
 
 Example:
+
 ```
 bash$ accepted -IC"no, I *DO NOT* want to do it"   
 ```
@@ -40,12 +41,15 @@ This makes the string 'no, i *do not* want to do it' the valid negating answer, 
 
 Example usage (in Bash-like script)
 ----
+
 ```
 bash$ read "Do you want to do_it (answer 'yes' to confirm)? " answer
 bash$ [ accepted +yes $answer] && do_it
 
+
 Compilation
 ----
+
 ```
 autoreconf --install
 ./configure
@@ -69,32 +73,40 @@ Example 1.
 ```
 bash$ [ accepted --S --strict --stdmin "Do you want to" ] && do_it
 ```
+
 renders to console: 
+
 ```
 Do you want to (y/n)? 
 ```
+
 and accept 'y', 'Y', 'n', 'N' as valid input.
 
 
 Example 2.
+
 ```	
 bash$ [ accepted --S --strict --stdmax "Do you want to" ] && do_it
 ```
+
 renders to console: 
+
 ```
 Do you want to (y/n/yes/no/yup/nah/yeah/nope)?
 ``` 
+
 and accept any of showed answers, ignoring case.
 
 [ ] MUCH MORE (well maybe not THAT much xD )
 
 Options
--------
+---
 
+```
 --S: 		solo-operation: no need to do 'read' and pass the answer, aditionally the passed prompt is printed with all variants of answers.
 
 --strict:	this makes the input prompt accept only listed strings.
-
+```
 
 ### (c) 2018 Pawel.Suchanecki@gmail.com (xsub)
 
