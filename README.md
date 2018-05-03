@@ -36,6 +36,7 @@ Example:
 ```
 bash$ accepted -IC"no, I *DO NOT* want to do it"   
 ```
+
 This makes the string 'no, i *do not* want to do it' the valid negating answer, disregarding it's case.
 
 
