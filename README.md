@@ -73,16 +73,20 @@ bash$ [ accepted --S --strict --stdmin "Do you want to" ] && do_it
 ```
 Will render to console: 
 ```
-Do you want to (y/n)? "
+Do you want to (y/n)? 
 ```
 and accept 'y', 'Y', 'n', 'N' as valid input.
 
 
 Example 2.
-	
-	bash$ [ accepted --S --strict --stdmax "Do you want to" ] && do_it
-
-Will render to console: "Do you want to (y/n/yes/no/yup/nah/yeah/nope)? " and accept any of showed answers, ignoring case.
+```	
+bash$ [ accepted --S --strict --stdmax "Do you want to" ] && do_it
+```
+Will render to console: 
+```
+Do you want to (y/n/yes/no/yup/nah/yeah/nope)?
+``` 
+and accept any of showed answers, ignoring case.
 
 
 
