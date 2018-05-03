@@ -2,17 +2,17 @@
 
 
 ## Brief
-----
+---
 **This is `accepted` -- tiny console program to aid shell scripts in probing user confirmations.**
 
 
-## Licenses:
-----
+## Licenses
+---
 This software is dual licensed under BSD or GPL version 2.
 
 
 ## Overview
-----
+---
 This program comes as one binary `accepted` buts gets hardlinked to another instance called `rejected` on installation.
 
 Both program take list of strings (forming the list of allowed answers) and string user already entered on prompt as answer.
@@ -24,7 +24,6 @@ Behaviour changes depending on binary name making `accepted` wait for postive an
 
 ## More
 ----
-
 As default:
 
 `accepted` expects *'--std-yes'* strings or strings added with *'+'* prefix as arguments, if user input matches any of them the program exit code is *ACCEPTED*, othwerise exits with *REJECTED*. 
