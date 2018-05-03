@@ -3,7 +3,7 @@
 
 ## Brief
 ----
-This is "accepted" - tiny console program to aid shell scripts in probing user confirmations.
+**This is `accepted` -- tiny console program to aid shell scripts in probing user confirmations.**
 
 
 ## Licenses:
@@ -27,16 +27,16 @@ Behaviour changes depending on binary name making `accepted` wait for postive an
 
 As default:
 
-`accepted` expects '--std-yes' strings or strings added with '+' prefix as arguments, if user input matches any of them the program exit code is ACCEPTED, othwerise exits with REJECTED. 
+`accepted` expects *'--std-yes'* strings or strings added with *'+'* prefix as arguments, if user input matches any of them the program exit code is *ACCEPTED*, othwerise exits with *REJECTED*. 
 
-`rejected` expects '--std-no' strings or strings added with '-' as arguments to return REJECTED, otherwise it returns ACCEPTED. 
+`rejected` expects *'--std-no'* strings or strings added with *'-'* as arguments to return *REJECTED*, otherwise it returns *ACCEPTED*. 
 
-There is a way to define case insensitive strings as parts of answer list by using 'IC' prefix and quotation marks, like: +IC"<string>" or -IC"<string>";
+There is a way to define case insensitive strings as parts of answer list by using 'IC' prefix and quotation marks, like: *+IC"<string>"* or *-IC"<string>"*.
 
 Example:
-
-	bash$ accepted -IC"no, I *DO NOT* want to do it"   
-
+```
+bash$ accepted -IC"no, I *DO NOT* want to do it"   
+```
 This makes the string 'no, i *do not* want to do it' the valid negating answer, disregarding it's case.
 
 
@@ -48,24 +48,26 @@ bash$ [ accepted +yes $answer] && do_it
 ```
 
 
-Compilation:
-------------
+Compilation
+----
 ```
 autoreconf --install
 ./configure
 make
 ```
 
+> Note: See ./scripts/compile.sh for complete example; 
+
 TODO
 ----
 
-1. Add flags --std-yes, --std-no, --stdyes, --stdno
+[ ] . Add flags --std-yes, --std-no, --stdyes, --stdno
 
  a) --std-yes = +IC"y" +IC"yes" +IC"yep" +IC"yeah" 
  b) --std-no  = -IC"n" -IC"no" -IC"nah" -IC"nope"
  
 
-2. Solo-operation mode (doing actual prompt in accepted/rejected code).
+[ ] Solo-operation mode (doing actual prompt in accepted/rejected code).
 
 Example 1.
 ```
@@ -88,7 +90,7 @@ Do you want to (y/n/yes/no/yup/nah/yeah/nope)?
 ``` 
 and accept any of showed answers, ignoring case.
 
-
+[ ] MUCH MORE (well maybe not THAT much xD )
 
 Options
 -------
