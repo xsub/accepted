@@ -63,6 +63,8 @@ make
 TODO
 ----
 
+- [x] Initial code that does something and minimal development ecosystem.
+
 - [ ] Add flags *--std-yes*, *--std-no*, *--stdyes*, *--stdno*
 
   - a) *--std-yes = +IC"y" +IC"yes" +IC"yep" +IC"yeah"* 
@@ -99,16 +101,19 @@ Do you want to (y/n/yes/no/yup/nah/yeah/nope)?
 
 and accept any of showed answers, ignoring case.
 
-[ ] MUCH MORE (well maybe not THAT much xD )
+- [ ] MUCH MORE (well maybe not THAT much xD )
 
 Options
 ---
 
 ```
---S: 		solo-operation: no need to do 'read' and pass the answer, aditionally the passed prompt is printed with all variants of answers.
+--S: 		solo-operation: no need to do 'read' and pass the answer, additionally the passed
+		prompt is printed with all variants of answers.
 
 --strict:	this makes the input prompt accept only listed strings.
 ```
 
+---
 ### (c) 2018 Pawel.Suchanecki@gmail.com (xsub)
+---
 
