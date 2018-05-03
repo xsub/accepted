@@ -158,6 +158,9 @@ void parse_option_getopt_long(char **argv, int item_to_parse_idx) {
 
 void cleanup(void) {
   while (accept_list_head.lh_first != NULL) {
+#if DEBUG_ON
+    printf("%s: token: %s\n", __func__, accept_list_head.lh_first->token);
+#endif
 
     LIST_REMOVE(accept_list_head.lh_first, entries);
   }
