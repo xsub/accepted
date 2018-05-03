@@ -46,6 +46,7 @@ Example usage (in Bash-like script)
 ```
 bash$ read "Do you want to do_it (answer 'yes' to confirm)? " answer
 bash$ [ accepted +yes $answer] && do_it
+```
 
 
 Compilation
