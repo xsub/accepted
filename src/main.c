@@ -76,9 +76,10 @@ struct entry *alloc_element(char *token) {
 
   if (new_el_ptr) {
     new_el_ptr->token = token;
-    //#if DEBUG_O
+#if DEBUG_ON
     printf("%s: allocation for token: %s, length: %d\n", __func__, token,
            (int)0); // strlen(token));
+#endif
   } else {
     REPORT_ERROR("malloc error");
   }
@@ -86,7 +87,9 @@ struct entry *alloc_element(char *token) {
 }
 
 void add_accepted(char *token) {
+#if DEBUG_ON
   printf("%s: token: %s,\n", __func__, token);
+#endif
   struct entry *new_el_ptr = alloc_element(token);
   LIST_INSERT_HEAD(&accept_list_head, new_el_ptr, entries);
 }
@@ -131,9 +134,11 @@ void parse_option_getopt_long(char **argv, int item_to_parse_idx) {
   printf("%s: token to process: %s\n", __func__, argv[item_to_parse_idx]);
 #endif
 
-  int long_index = 0;
-  // extern int optind;
-  // optind = 2;
+  // long_index = 0;
+  extern int optind;
+  optind = 0;
+  item_to_parse_idx = 0;
+  int dummy = 0;
   int opt = getopt_long_only(1, argv, "", long_options, &item_to_parse_idx);
   if (opt != -1) {
     switch (opt) {

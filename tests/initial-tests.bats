@@ -11,7 +11,7 @@ EXIT_FAILURE=1
   [ "$output" == "" ]
 }
 
-@test "accepted: test the most siplistic case" {
+@test "accepted: test the most simplistic case" {
   run $ACCEPTED_bin -y -Y y
   [ "$status" -eq $EXIT_SUCCESS ]
 }
