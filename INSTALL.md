@@ -13,6 +13,6 @@ autoreconf --install
 make install 
 ```
 
-### Installation notes:
+### Installation notes
 - Use `./configure --prefix=$TARGET_DIR` to specify your own install dir.
-- use sudo if configured with no prefix, this is for /bin installation.
+- use 'sudo' if configured with no prefix, this is allowing install to '/bin'.
