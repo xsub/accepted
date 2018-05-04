@@ -153,7 +153,7 @@ void parse_option_getopt_long(char **argv, int item_to_parse_idx) {
 #endif
 
   optind = 1;
-  // opterr = 0; // do not print unrecognized option error
+  opterr = 0; // do not print unrecognized option error
   int opt = getopt_long_only(2, argv, "", long_options, &item_to_parse_idx);
   if (opt != -1) {
     switch (opt) {
