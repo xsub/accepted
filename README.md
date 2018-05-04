@@ -18,16 +18,16 @@ Both program take list of strings (forming the list of allowed answers) and stri
 
 Program compares the user input string against the lists of accepting and rejecting answers and returns respective exit code to the calling shell. Flags are intended to modify the profile of operation.
 
-Behaviour changes depending on binary name making `accepted` wait for postive and `rejected` for negative answers (strings representing accepting and rejecting answers).
+Behaviour changes depending on binary name making `accepted` wait for postive and `rejected` for negative answers (strings representing accepting and rejecting answers, repsectively).
 
 
 More
 ----
 As default:
 
-`accepted` expects *'--std-yes'* strings or strings added with *'+'* prefix as arguments, if user input matches any of them the program exit code is *ACCEPTED*, othwerise exits with *REJECTED*. 
+*`accepted`* expects `--std-yes` strings or strings added with `+` prefix as arguments, if user input matches any of them the program exit code is **ACCEPTED**, othwerise exits with **REJECTED**. 
 
-`rejected` expects *'--std-no'* strings or strings added with *'-'* as arguments to return *REJECTED*, otherwise it returns *ACCEPTED*. 
+*`rejected`* expects `--std-no` strings or strings added with `-` as arguments to return **REJECTED**, otherwise it returns **ACCEPTED**. 
 
 There is a way to define case insensitive strings as parts of answer list by using 'IC' prefix and quotation marks, i.e.: `+IC"<string>"`  or `-IC"<string>`.
 
