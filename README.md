@@ -29,7 +29,7 @@ As default:
 
 `rejected` expects *'--std-no'* strings or strings added with *'-'* as arguments to return *REJECTED*, otherwise it returns *ACCEPTED*. 
 
-There is a way to define case insensitive strings as parts of answer list by using 'IC' prefix and quotation marks, like: *+IC"<string>"* or *-IC"<string>"*.
+There is a way to define case insensitive strings as parts of answer list by using 'IC' prefix and quotation marks, i.e.: `+IC"<string>"`  or `-IC"<string>`.
 
 > Example:
 
