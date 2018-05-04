@@ -21,6 +21,14 @@ Program compares the user input string against the lists of accepting and reject
 Behaviour changes depending on binary name making `accepted` wait for postive and `rejected` for negative answers (strings representing accepting and rejecting answers, repsectively).
 
 
+Example usage (in Bash-like script)
+----
+
+```
+bash$ read "Do you want to do_it (answer 'yes' to confirm)? " answer
+bash$ [ accepted +yes $answer] && do_it
+```
+
 More
 ----
 As default:
@@ -41,16 +49,6 @@ bash$ accepted -IC"no, I *DO NOT* want to do it"
 ```
 
 This makes the string 'no, i *do not* want to do it' the valid negating answer, disregarding it's case.
-
-
-Example usage (in Bash-like script)
-----
-
-```
-bash$ read "Do you want to do_it (answer 'yes' to confirm)? " answer
-bash$ [ accepted +yes $answer] && do_it
-```
-
 
 Compilation
 ----
