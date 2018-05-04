@@ -27,7 +27,7 @@ As default:
 
 *`accepted`* expects `--std-yes` (option defined) strings or strings added with `+` prefix as arguments, if user input matches any of them the program exit code is `ACCEPTED` (0), othwerise exits with `REJECTED` (1).  
 
-*`rejected`* expects `--std-no` (option defined) strings or strings added with `-` as arguments to return `REJECTED`, otherwise it returns `ACCEPTED`. 
+*`rejected`* expects `--std-no` (option defined) strings or strings added with `-` as arguments to return `REJECTED`, otherwise it returns `ACCEPTED` (inverted logic of the prompts).
 
 > Note:
 The example exit codes (in curly brackets above) are for POSIX-compatible systems.
