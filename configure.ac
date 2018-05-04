@@ -1,5 +1,4 @@
-~/amhello % cat configure.ac
-AC_INIT([accepted], [1.0], [subdcc@gmail.com])
+AC_INIT([Accepted], [0.1], [subdcc@gmail.com],[accepted],[https://github.com/xsub/accepted])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 AC_PROG_CC
 AC_CONFIG_HEADERS([config.h])
