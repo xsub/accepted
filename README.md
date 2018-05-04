@@ -25,9 +25,12 @@ More
 ----
 As default:
 
-*`accepted`* expects `--std-yes` (option defined) strings or strings added with `+` prefix as arguments, if user input matches any of them the program exit code is **ACCEPTED**, othwerise exits with `REJECTED`. 
+*`accepted`* expects `--std-yes` (option defined) strings or strings added with `+` prefix as arguments, if user input matches any of them the program exit code is `ACCEPTED` (0), othwerise exits with `REJECTED` (1).  
 
 *`rejected`* expects `--std-no` strings or strings added with `-` as arguments to return `REJECTED`, otherwise it returns `ACCEPTED`. 
+
+> Note:
+The example exit codes (in curly brackets above) are for POSIX-compatible systems.
 
 There is a way to define case insensitive strings as parts of answer list by using 'IC' prefix and quotation marks, i.e.: `+IC"<string>"`  or `-IC"<string>`.
 
