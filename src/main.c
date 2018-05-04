@@ -229,8 +229,10 @@ int main(int argc, char **argv) {
     } else if ('-' == token[0] && '-' != token[1]) {
       add_rejected(token);
     } else {
-      // pass token as on-the fly allocated array for getopt
-      char *const dummy_argv[2] = {'x', token};
+      // parse_option (token);
+      // parse_option_getopt_long(&(argv[arg_id])); // pass pointer to array
+
+      char *const dummy_argv[2] = {"._oOn", token};
       parse_option_getopt_long(dummy_argv, 0);
     }
 
