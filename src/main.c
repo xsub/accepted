@@ -53,7 +53,7 @@ const int ACCEPTED = EXIT_SUCCESS;
 const int REJECTED = EXIT_FAILURE;
 
 /* The operation mode (program_type) depends on binary (file) name */
-// making FILENAME_MAX_LEN a const int here renders "variably modified" on
+// making FILENAME_MAX_LEN a const int  here renders "variably modified" on
 // binary_name[]
 #define FILENAME_MAX_LEN (8) // rejected/accepted is 8 letters long
 char binary_name[FILENAME_MAX_LEN];
@@ -118,12 +118,15 @@ void version_exit() {
 
 void help_exit() {
   printf("Usage: %s [options] [+<yes_answer>] [-<no_answer>] "
-         "<user_input_at_prompt>\n\n",
+         "<user_input_at_prompt>\n",
          binary_name);
-  printf("Options:\n\n");
-  printf("\t\t--std-yes, --stdyes, --stdy\t-\textend the user provided answers "
-         "(if any) with standard confirmations:\n");
-  printf("\t\t\t\t +y +yes +yup +yeah (case insensitive\n");
+  printf(
+      "\n"
+      "Options:\n\n"
+      "--std-yes, --stdyes, --stdy    extend the user provided answers \n"
+      "                               (if any) with standard confirmations:\n"
+      "                               +y +yes +yup +yeah (case "
+      "insensitive).\n");
   printf("\n\n");
   exit(EXIT_SUCCESS);
 }
@@ -246,7 +249,7 @@ int main(int argc, char **argv) {
       // parse_option (token);
       // parse_option_getopt_long(&(argv[arg_id])); // pass pointer to array
 
-      char *const dummy_argv[2] = {"._oOn", token};
+      char *const dummy_argv[2] = {binary_name, token};
       parse_option_getopt_long(dummy_argv, 0);
     }
 
