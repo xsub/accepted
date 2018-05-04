@@ -7,7 +7,7 @@ read -p "Do yo want to continue the $0? " a
 # i.e.:
 # make && ./src/accepted --help && (
 
- make && (
+./scripts/compile.sh && make && (
 ln -s src/accepted rejected
 ./rejected 
 if [ $? -ne -0 ];
