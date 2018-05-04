@@ -5,11 +5,18 @@ REJECTED_bin=./src/rejected
 EXIT_SUCCESS=0
 EXIT_FAILURE=1
 
-@test "accepted: run no argument, exit code should be $EXIT_FAILURE" {
+@test "accepted: no arguments exit code should be $EXIT_FAILURE" {
   run $ACCEPTED_bin
   [ "$status" -eq $EXIT_FAILURE ]
   [ "$output" == "" ]
 }
+
+@test "rejected: no arguments, exit code should be $EXIT_SUCCESS" {
+  run $REJECTED_bin
+  [ "$status" -eq $EXIT_SUCCESS ]
+  [ "$output" == "" ]
+}
+
 
 @test "accepted: test the most simplistic case" {
   run $ACCEPTED_bin -y -Y y
@@ -23,7 +30,7 @@ EXIT_FAILURE=1
 }
 
 @test "rejected: --std-no without input, should EXIT_SUCCESS" {
-  run $ACCEPTED_bin --std-no
+  run $REJECTED_bin --std-no
   [ "$status" -eq $EXIT_SUCCESS ]
 }
 
