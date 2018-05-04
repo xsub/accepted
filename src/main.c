@@ -164,15 +164,25 @@ void parse_option_getopt_long(char **argv, int item_to_parse_idx) {
 
 void cleanup(void) {
   while (accept_list_head.lh_first != NULL) {
+// intentionally missing check if allocation was done, we ALWAYS allocate
 #if DEBUG_ON
-    printf("%s: removing token: %s\n", __func__,
+    printf("%s: accept_list: removing token: %s\n", __func__,
            accept_list_head.lh_first->token);
 #endif
-
+    free(&(accept_list_head.lh_first->token));
     LIST_REMOVE(accept_list_head.lh_first, entries);
   }
-  while (reject_list_head.lh_first != NULL)
+  while (reject_list_head.lh_first != NULL) {
+    // here for the other list, the check is in place
+    if (NULL == &(reject_list_head.lh_first->token)) {
+#if DEBUG_ON
+      printf("%s: reject_list: removing token: %s\n", __func__,
+             reject_list_head.lh_first->token);
+#endif
+      free(&(reject_list_head.lh_first->token));
+    }
     LIST_REMOVE(reject_list_head.lh_first, entries);
+  }
 #if DEBUG_ON
   puts("Cleanup done.");
 #endif
