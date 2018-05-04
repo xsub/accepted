@@ -3,12 +3,11 @@
 git status -uno
 read -p "Do yo want to continue the $0? " a
 
-# TODO: once --help (or --version) works again change introduce the the binary check after make test
-# i.e.:
-# make && ./src/accepted --help && (
+#./scripts/compile.sh && make && (
+# make && ln -s src/accepted rejected
 
-./scripts/compile.sh && make && (
-ln -s src/accepted rejected
+ make && ./src/accepted --help && (
+ln -s ./src/accepted rejected
 ./rejected 
 if [ $? -ne -0 ];
 then
