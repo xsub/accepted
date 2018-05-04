@@ -43,24 +43,32 @@
 #include <strings.h>
 #include <unistd.h> // for getopt_long_only() not defined in getopt.h
 
-/* Linux man for queue(3): "Not in POSIX.1-2001. Present on the BSDs. The
- * queue functions first appeared in 4.4BSD."
+/* Linux man for queue(3): "Not in POSIX.1-2001. Present on the BSDs.
+ * The queue functions first appeared in 4.4BSD."
  */
 #include <sys/queue.h>
 
+/* Program validation output states */
 const int ACCEPTED = EXIT_SUCCESS;
 const int REJECTED = EXIT_FAILURE;
-const char *delims = " ";
-const int FILENAME_MAX_LEN = 32;
 
+/* The operation mode (program_type) depends on binary (file) name */
+// making FILENAME_MAX_LEN a const int here renders "variably modified" on
+// binary_name[]
+#define FILENAME_MAX_LEN (8) // rejected/accepted is 8 letters long
+char binary_name[FILENAME_MAX_LEN];
 int program_type = 0x1337; // means unset
 
+/* Trivial error reporting */
 int errors = 0;
 #define REPORT_ERROR(msg) printf("ERROR(%3d) %s\n", errors++, msg)
 
+/* Default accepting and rejecting anwsers (confirmations/declines) */
 char *const stdyes[] = {"y", "yes", "yup", "yeah"};
 char *const stdno[] = {"n", "no", "nah", "nope"};
 
+/* Answers are stored in list having this entry as node; Once registered token
+ * holds pointer to a answer. */
 struct entry {
   char *token;
   LIST_ENTRY(entry) entries;
@@ -74,6 +82,7 @@ reject_list_head = LIST_HEAD_INITIALIZER(reject_list_head);
 struct accept_head *accept_list_head_ptr;
 struct rejct_head *reject_list_head_ptr;
 
+/* This allocates and return new struct entry node */
 struct entry *alloc_element(char *token) {
   struct entry *new_el_ptr = malloc(sizeof(struct entry));
 
@@ -89,6 +98,8 @@ struct entry *alloc_element(char *token) {
   return new_el_ptr;
 }
 
+/* Program cmd line arguments, the answer tokens (+<string> &<-string>) -
+ * handlers */
 void add_accepted(char *token) {
 #if DEBUG_ON
   printf("%s: token: %s,\n", __func__, token);
@@ -97,6 +108,7 @@ void add_accepted(char *token) {
   LIST_INSERT_HEAD(&accept_list_head, new_el_ptr, entries);
 }
 
+/* Option processing helpers */
 void add_rejected(char *token) {}
 
 void version_exit() {
@@ -105,26 +117,18 @@ void version_exit() {
 }
 
 void help_exit() {
-  puts("Usage: WIP");
+  printf("Usage: %s [options] [+<yes_answer>] [-<no_answer>] "
+         "<user_input_at_prompt>\n\n",
+         binary_name);
+  printf("Options:\n\n");
+  printf("\t\t--std-yes, --stdyes, --stdy\t-\textend the user provided answers "
+         "(if any) with standard confirmations:\n");
+  printf("\t\t\t\t +y +yes +yup +yeah (case insensitive\n");
+  printf("\n\n");
   exit(EXIT_SUCCESS);
 }
 
-void parse_option(char *t) {
-  // print version
-  if (!strcmp(t, "--version")) {
-    version_exit();
-  }
-
-  if (!strcmp(t, "--help")) {
-    help_exit();
-  }
-
-  if (!strcmp(t, "--S") || !strcmp(t, "--single")) {
-    puts("ERROR: Solo-mode *NOT* implemented (yet)");
-    exit(EXIT_FAILURE);
-  }
-}
-
+/* Program argument options defintion -- we use long options only */
 static struct option long_options[] = {{"help", no_argument, 0, 'h'},
                                        {"version", no_argument, 0, 'v'},
                                        //   {"stdyes", no_argument, 0, 'y'},
@@ -133,6 +137,10 @@ static struct option long_options[] = {{"help", no_argument, 0, 'h'},
                                        //   {"std-no", no_argument, 0, 'N' },
                                        {0, 0, 0, 0}};
 
+/* Parse the GNU stye long options (--like-option) with getopt_long_only fed
+with on-the-fly created
+argv-like array to process only one entry at the time, but still benefit fro
+getopt*(). */
 void parse_option_getopt_long(char **argv, int item_to_parse_idx) {
 #if DEBUG_ON
   printf("%s: token to process: '%s'\n", __func__, argv[1]);
@@ -190,10 +198,6 @@ void cleanup(void) {
 
 int main(int argc, char **argv) {
 
-  // The operation mode (program_type) depends on binary name: check the
-  //
-  // actual file name
-  char binary_name[FILENAME_MAX_LEN];
   strncpy(binary_name, basename(argv[0]), FILENAME_MAX_LEN);
 
   if (!strcmp(binary_name, "accepted")) {
