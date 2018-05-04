@@ -68,8 +68,8 @@ TODO
 
 - [ ] Add flags *--std-yes*, *--std-no*, *--stdyes*, *--stdno*
 
-  - a) *--std-yes = +IC"y" +IC"yes" +IC"yep" +IC"yeah"* 
-  - b) *--std-no  = -IC"n" -IC"no" -IC"nah" -IC"nope"*
+  - a) `--std-yes` meaning `+IC"y" +IC"yes" +IC"yep" +IC"yeah"` 
+  - b) `--std-no`  meaning `-IC"n" -IC"no" -IC"nah" -IC"nope"`
  
 
 - [ ] Solo-operation mode (doing actual prompt in accepted/rejected code).
