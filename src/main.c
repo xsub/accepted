@@ -58,6 +58,9 @@ int program_type = 0x1337; // means unset
 int errors = 0;
 #define REPORT_ERROR(msg) printf("ERROR(%3d) %s\n", errors++, msg)
 
+char *const stdyes[] = {"y", "yes", "yup", "yeah"};
+char *const stdno[] = {"n", "no", "nah", "nope"};
+
 struct entry {
   char *token;
   LIST_ENTRY(entry) entries;
@@ -121,8 +124,9 @@ void parse_option(char *t) {
     exit(EXIT_FAILURE);
   }
 }
-static struct option long_options[] = {{"version", no_argument, 0, 'v'},
-                                       {"help", no_argument, 0, 'h'},
+
+static struct option long_options[] = {{"help", no_argument, 0, 'h'},
+                                       {"version", no_argument, 0, 'v'},
                                        //   {"stdyes", no_argument, 0, 'y'},
                                        //   {"std-yes", no_argument, 0, 'Y' },
                                        //   {"stdno", no_argument, 0, 'n' },
@@ -131,15 +135,12 @@ static struct option long_options[] = {{"version", no_argument, 0, 'v'},
 
 void parse_option_getopt_long(char **argv, int item_to_parse_idx) {
 #if DEBUG_ON
-  printf("%s: token to process: %s\n", __func__, argv[item_to_parse_idx]);
+  printf("%s: token to process: '%s'\n", __func__, argv[1]);
 #endif
 
-  // long_index = 0;
-  extern int optind;
-  optind = 0;
-  item_to_parse_idx = 0;
+  optind = 1;
   int dummy = 0;
-  int opt = getopt_long_only(1, argv, "", long_options, &item_to_parse_idx);
+  int opt = getopt_long_only(2, argv, "", long_options, &item_to_parse_idx);
   if (opt != -1) {
     switch (opt) {
     case 'v':
@@ -224,14 +225,13 @@ int main(int argc, char **argv) {
 #endif
 
     if ('+' == token[0]) {
-      add_accepted(argv[arg_id]);
+      add_accepted(token);
     } else if ('-' == token[0] && '-' != token[1]) {
-      add_rejected(argv[arg_id]);
+      add_rejected(token);
     } else {
-      // parse_option (token);
-      // parse_option_getopt_long(&(argv[arg_id])); // pass pointer to array
-
-      parse_option_getopt_long(argv, arg_id);
+      // pass token as on-the fly allocated array for getopt
+      char *const dummy_argv[2] = {'x', token};
+      parse_option_getopt_long(dummy_argv, 0);
     }
 
     arg_id++;
@@ -249,3 +249,38 @@ cleanup:
  * //Forward traversal for (np = accept_list_.lh_first; np != NULL; np =
  * np->entries.le_next) np-> ...
  */
+#include <getopt.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+struct input_parameters {
+  char *d; // data set
+};
+
+int solver_help(int argc, char *const argv[], struct input_parameters *p) {
+  p->d = "default name";
+
+  static struct option long_options[] = {{"data", required_argument, 0, 'd'},
+                                         {0, 0, 0, 0}};
+
+  int option_index = 0;
+
+  // optreset = 1;     /*  ADD THIS  */
+  optind = 1; /*  ADD THIS  */
+
+  int c = getopt_long(argc, argv, "d:", long_options, &option_index);
+
+  switch (c) {
+  case -1:
+    break;
+
+  case 'd':
+    p->d = optarg;
+    break;
+
+  default:
+    printf("in default case...\n");
+    printf("wrong option specification\n");
+    exit(EXIT_FAILURE);
+  }
+}
