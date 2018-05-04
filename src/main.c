@@ -251,38 +251,3 @@ cleanup:
  * //Forward traversal for (np = accept_list_.lh_first; np != NULL; np =
  * np->entries.le_next) np-> ...
  */
-#include <getopt.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-struct input_parameters {
-  char *d; // data set
-};
-
-int solver_help(int argc, char *const argv[], struct input_parameters *p) {
-  p->d = "default name";
-
-  static struct option long_options[] = {{"data", required_argument, 0, 'd'},
-                                         {0, 0, 0, 0}};
-
-  int option_index = 0;
-
-  // optreset = 1;     /*  ADD THIS  */
-  optind = 1; /*  ADD THIS  */
-
-  int c = getopt_long(argc, argv, "d:", long_options, &option_index);
-
-  switch (c) {
-  case -1:
-    break;
-
-  case 'd':
-    p->d = optarg;
-    break;
-
-  default:
-    printf("in default case...\n");
-    printf("wrong option specification\n");
-    exit(EXIT_FAILURE);
-  }
-}
