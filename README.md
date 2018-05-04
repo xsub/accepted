@@ -146,9 +146,10 @@ read -p "Do you want to stop the process? (yes/no)" answer
 [ rejected +yes -no $answer ] || echo "<<-- yes is an accepting answer, rejected expects user to negate, so here exit is FAILURE"
 ```
 
-### Notes
-So (1) rejected in standard mode returns success when user provides a one of negative answers.
-So (2) rejected can be treated as "! accepted", which can not be used in in this form as [ ! accepted ] is operator error in Bash.
+### Further notes on rejected
+`rejected` in standard mode returns success when user provides a one of negative answers.
+
+`rejected` can be treated as `! accepted`, which can not be used in in this form as `[ ! accepted ]` ends up with operator error in Bash.
 
 ---
 ### (c) 2018 Pawel.Suchanecki@gmail.com (xsub)
