@@ -17,16 +17,25 @@ EXIT_FAILURE=1
 }
 
 
-@test "accepted: --std-yes" {
+@test "accepted: --std-yes without input, should EXIT_FAILURE" {
+  run $ACCEPTED_bin --std-yes
+  [ "$status" -eq $EXIT_FAILURE ]
+}
+
+@test "rejected: --std-no without input, should EXIT_SUCCESS" {
+  run $ACCEPTED_bin --std-no
+  [ "$status" -eq $EXIT_SUCCESS ]
+}
+
+@test "accepted: --std-yes with proper user input: 'yeah'" {
   run $ACCEPTED_bin --std-yes yeah
   [ "$status" -eq $EXIT_SUCCESS ]
 }
 
-@test "accepted: banner version 1.0." {
+@test "accepted: banner version." {
   run $ACCEPTED_bin --version
-  [ "$output" == "This is accepted 1.0." ]
+  [ "$output" == "This is Accepted 0.1." ]
 }
-
 
 @test "accepted: help" {
   #run $ACCEPTED_bin --help

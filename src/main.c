@@ -57,7 +57,8 @@ const int REJECTED = EXIT_FAILURE;
 // binary_name[]
 #define FILENAME_MAX_LEN (8) // rejected/accepted is 8 letters long
 char binary_name[FILENAME_MAX_LEN];
-int program_type = 0x1337; // means unset
+int program_type = 0x13;         // means unset
+int program_inverse_type = 0x37; // means unset
 
 /* Trivial error reporting */
 int errors = 0;
@@ -116,7 +117,7 @@ void version_exit() {
   exit(EXIT_SUCCESS);
 }
 
-void help_exit() {
+void help_exit(char err) {
   printf("Usage: %s [options] [+<yes_answer>] [-<no_answer>] "
          "<user_input_at_prompt>\n",
          binary_name);
@@ -128,7 +129,9 @@ void help_exit() {
       "                               +y +yes +yup +yeah (case "
       "insensitive).\n");
   printf("\n\n");
-  exit(EXIT_SUCCESS);
+
+  // 4 state output: output 2 states but they alter between accepted & rejected
+  err ? exit(program_inverse_type) : exit(program_type);
 }
 
 /* Program argument options defintion -- we use long options only */
@@ -150,20 +153,22 @@ void parse_option_getopt_long(char **argv, int item_to_parse_idx) {
 #endif
 
   optind = 1;
-  int dummy = 0;
+  // opterr = 0; // do not print unrecognized option error
   int opt = getopt_long_only(2, argv, "", long_options, &item_to_parse_idx);
   if (opt != -1) {
     switch (opt) {
     case 'v':
       version_exit(); // never returns
     case 'h':
-      help_exit(); // same
-                   /*case 'l' : length = atoi(optarg);
-                      break;
-                      case 'b' : breadth = atoi(optarg);
-                      break; */
+      help_exit(0); // same
+                    /*case 'l' : length = atoi(optarg);
+                       break;
+                       case 'b' : breadth = atoi(optarg);
+                       break; */
     default:
-      help_exit();
+      // Mimic the unrecognized option error. Pretty much useless ;-)
+      printf("%s: unrecognized option '%s'\n", binary_name, argv[1]);
+      help_exit(1);
     }
   }
 #if DEBUG_ON
@@ -205,8 +210,10 @@ int main(int argc, char **argv) {
 
   if (!strcmp(binary_name, "accepted")) {
     program_type = ACCEPTED;
+    program_inverse_type = REJECTED;
   } else if (!strcmp(binary_name, "rejected")) {
     program_type = REJECTED;
+    program_inverse_type = ACCEPTED;
   }
 
 #if DEBUG_ON
