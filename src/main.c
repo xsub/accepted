@@ -231,6 +231,8 @@ void cleanup(void) {
   puts("Cleanup done.");
 #endif
 }
+/* Helper */
+int user_input_token_length = 0;
 
 int main(int argc, char **argv) {
 
@@ -284,6 +286,7 @@ int main(int argc, char **argv) {
         add_rejected(token);
       } else if ('-' == token[0] && '-' == token[1]) {
         // parse the '--long-option' using temporary argv
+        // Note: can pass "token prev" and skip this dummy
         char *const dummy_argv[2] = {binary_name, token};
         parse_option_getopt_long(dummy_argv, 0);
       } else {
@@ -292,29 +295,37 @@ int main(int argc, char **argv) {
     }
 
     if (in_user_input_token) {
-      // use input token(s) processing
-      if (NULL == user_input_tokens) {
+// use input token(s) processing
 #if DEBUG_ON
-        printf("User input processing mode set, token: %s\n", token);
+      printf("User input processing mode set, token: %s\n", token);
 #endif
-        user_input_tokens = malloc(strlen(token) + 1);
-        memcpy(user_input_tokens, token, strlen(token));
-      } else {
-        int old_length = strlen(user_input_tokens);
-        printf("old_length=%d\n", old_length);
-        user_input_tokens =
-            realloc(user_input_tokens, old_length + 1 + strlen(token));
-        memcpy(user_input_tokens + old_length + 1, token, strlen(token) - 1);
+
+      printf("token length=%d\n", strlen(token));
+      // user_input_tokens =
+      //    realloc(user_input_tokens, user_input_token_length+ 1 +
+      //    strlen(token));
+
+      user_input_tokens =
+          realloc(user_input_tokens, strlen(token) + user_input_token_length);
+
+      memcpy(&(user_input_tokens[user_input_token_length]), token,
+             strlen(token));
+
+      user_input_token_length += strlen(token);
+
+      printf("user_input_token_length = %d\n", user_input_token_length);
 #if DEBUG_ON
-        printf("user_input_tokens = %s\n", user_input_tokens);
+      printf("user_input_tokens = %s\n", user_input_tokens);
 #endif
-      }
     }
     arg_id++;
   }
 
 #if DEBUG_ON
-  printf("final user_input_tokens = %s\n", user_input_tokens);
+  // printf("final user_input_tokens = %s\n", user_input_tokens);
+  while (user_input_token_length--) {
+    printf("%c", *user_input_tokens++);
+  }
 #endif
 
   /* "answers" vs "user input" matching */
