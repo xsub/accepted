@@ -223,11 +223,7 @@ int main(int argc, char **argv) {
 
   // no args provided, no answer can be accepting
   if (argc < 2) {
-    if (ACCEPTED == program_type) {
-      exit(REJECTED);
-    } else {
-      exit(ACCEPTED);
-    }
+    exit(program_inverse_type);
   }
 
   /* Init list data */
@@ -240,6 +236,8 @@ int main(int argc, char **argv) {
   /*
    * walk through tokens
    */
+  char in_user_input_token = 0;
+  char *user_input_tokens = NULL;
   short arg_id = 1;
   while (arg_id < argc) {
     char *token = argv[arg_id];
@@ -248,27 +246,35 @@ int main(int argc, char **argv) {
     printf("%s, processing token: '%s'\n", __func__, token);
 #endif
 
-    if ('+' == token[0]) {
-      add_accepted(token);
-    } else if ('-' == token[0] && '-' != token[1]) {
-      add_rejected(token);
+    if (!in_user_input_token) {
+      if ('+' == token[0]) {
+        add_accepted(token);
+      } else if ('-' == token[0] && '-' != token[1]) {
+        add_rejected(token);
+      } else {
+        // parse_option (token);
+        // parse_option_getopt_long(&(argv[arg_id])); // pass pointer to array
+
+        char *const dummy_argv[2] = {binary_name, token};
+        parse_option_getopt_long(dummy_argv, 0);
+      }
     } else {
-      // parse_option (token);
-      // parse_option_getopt_long(&(argv[arg_id])); // pass pointer to array
+      // use input token(s) processing
+      if (NULL == user_input_tokens) {
+        user_input_tokens = malloc(strlen(token) + 1);
 
-      char *const dummy_argv[2] = {binary_name, token};
-      parse_option_getopt_long(dummy_argv, 0);
+      } else {
+        user_input_tokens = realloc(
+            user_input_tokens, strlen(user_input_tokens) + 1 + strlen(token));
+      }
     }
-
     arg_id++;
   }
 
-cleanup:
-  /*
-   * Delete lists
-   */
-
-  exit(REJECTED);
+  // terminate program
+  // for accepted: exit(REJECTED);
+  // for dual-logic code accepted/rejected
+  exit(program_inverse_type);
 }
 
 /*
