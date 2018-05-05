@@ -67,6 +67,10 @@ int errors = 0;
 /* Default accepting and rejecting anwsers (confirmations/declines) */
 char *const stdyes[] = {"y", "yes", "yup", "yeah"};
 char *const stdno[] = {"n", "no", "nah", "nope"};
+char *const stdmin[] = {"y", "n"};
+
+// All tokens of user input (answer/response to prompt) combined in processing.
+char *user_input_tokens = NULL;
 
 /* Answers are stored in list having this entry as node; Once registered token
  * holds pointer to a answer. */
@@ -75,15 +79,18 @@ struct entry {
   LIST_ENTRY(entry) entries;
 } * np;
 
+/* Definition of both lists and pointers to their heads */
+
 LIST_HEAD(accept_head, entry)
 accept_list_head = LIST_HEAD_INITIALIZER(accept_list_head);
+
 LIST_HEAD(reject_head, entry)
 reject_list_head = LIST_HEAD_INITIALIZER(reject_list_head);
 
 struct accept_head *accept_list_head_ptr;
 struct rejct_head *reject_list_head_ptr;
 
-/* This allocates and return new struct entry node */
+/* alloc_element(): This allocates and return new struct entry node */
 struct entry *alloc_element(char *token) {
   struct entry *new_el_ptr = malloc(sizeof(struct entry));
 
@@ -94,13 +101,15 @@ struct entry *alloc_element(char *token) {
            (int)0); // strlen(token));
 #endif
   } else {
-    REPORT_ERROR("malloc error");
+    REPORT_ERROR("malloc error!");
   }
   return new_el_ptr;
 }
 
 /* Program cmd line arguments, the answer tokens (+<string> &<-string>) -
  * handlers */
+
+/* add_accepted(): register tokens for positive answer list */
 void add_accepted(char *token) {
 #if DEBUG_ON
   printf("%s: token: %s,\n", __func__, token);
@@ -109,9 +118,10 @@ void add_accepted(char *token) {
   LIST_INSERT_HEAD(&accept_list_head, new_el_ptr, entries);
 }
 
-/* Option processing helpers */
+/* add_rejected(): register tokens for positive answer list */
 void add_rejected(char *token) {}
 
+/* Option processing helpers */
 void version_exit() {
   puts("This is " PACKAGE_STRING ".");
   exit(EXIT_SUCCESS);
@@ -179,6 +189,11 @@ void parse_option_getopt_long(char **argv, int item_to_parse_idx) {
 }
 
 void cleanup(void) {
+
+#if DEBUG_ON
+  puts("Cleaning up accept_list data and removing list...");
+#endif
+  // Cleanup lists
   while (accept_list_head.lh_first != NULL) {
 // intentionally missing check if allocation was done, we ALWAYS allocate
 #if DEBUG_ON
@@ -188,6 +203,11 @@ void cleanup(void) {
     free(&(accept_list_head.lh_first->token));
     LIST_REMOVE(accept_list_head.lh_first, entries);
   }
+
+#if DEBUG_ON
+  puts("Cleaning up rejct_list data and removing list...");
+#endif
+  // clean and remove the reject_list
   while (reject_list_head.lh_first != NULL) {
     // here for the other list, the check is in place
     if (NULL == &(reject_list_head.lh_first->token)) {
@@ -199,6 +219,14 @@ void cleanup(void) {
     }
     LIST_REMOVE(reject_list_head.lh_first, entries);
   }
+
+#if DEBUG_ON
+  puts("Cleaning up temporary data...");
+#endif
+  // cleanup the temporary data
+  if (user_input_tokens)
+    free(user_input_tokens);
+
 #if DEBUG_ON
   puts("Cleanup done.");
 #endif
@@ -206,8 +234,10 @@ void cleanup(void) {
 
 int main(int argc, char **argv) {
 
+  /* Get the binary image filename */
   strncpy(binary_name, basename(argv[0]), FILENAME_MAX_LEN);
 
+  /* Detect program type by checking filename */
   if (!strcmp(binary_name, "accepted")) {
     program_type = ACCEPTED;
     program_inverse_type = REJECTED;
@@ -221,7 +251,8 @@ int main(int argc, char **argv) {
          (ACCEPTED == program_type) ? "accepted" : "rejected");
 #endif
 
-  // no args provided, no answer can be accepting
+  /* Support proper exit code when no args provided, no answer can be accepting
+   */
   if (argc < 2) {
     exit(program_inverse_type);
   }
@@ -230,14 +261,14 @@ int main(int argc, char **argv) {
   LIST_INIT(&accept_list_head);
   LIST_INIT(&reject_list_head);
 
-  /* register cleanup */
+  /* Since memory related operations started, register cleanup */
   atexit(cleanup);
 
   /*
-   * walk through tokens
+   * Setup: Walk through argv (the program arguments) tokens, recognize
+   * "answers", "long options" and "user input" and handle each type properly.
    */
   char in_user_input_token = 0;
-  char *user_input_tokens = NULL;
   short arg_id = 1;
   while (arg_id < argc) {
     char *token = argv[arg_id];
@@ -251,33 +282,53 @@ int main(int argc, char **argv) {
         add_accepted(token);
       } else if ('-' == token[0] && '-' != token[1]) {
         add_rejected(token);
-      } else {
-        // parse_option (token);
-        // parse_option_getopt_long(&(argv[arg_id])); // pass pointer to array
-
+      } else if ('-' == token[0] && '-' == token[1]) {
+        // parse the '--long-option' using temporary argv
         char *const dummy_argv[2] = {binary_name, token};
         parse_option_getopt_long(dummy_argv, 0);
+      } else {
+        in_user_input_token = 1; // now all processing is done below only
       }
-    } else {
+    }
+
+    if (in_user_input_token) {
       // use input token(s) processing
       if (NULL == user_input_tokens) {
+#if DEBUG_ON
+        printf("User input processing mode set, token: %s\n", token);
+#endif
         user_input_tokens = malloc(strlen(token) + 1);
-
+        memcpy(user_input_tokens, token, strlen(token));
       } else {
-        user_input_tokens = realloc(
-            user_input_tokens, strlen(user_input_tokens) + 1 + strlen(token));
+        int old_length = strlen(user_input_tokens);
+        printf("old_length=%d\n", old_length);
+        user_input_tokens = user_input_tokens =
+            realloc(user_input_tokens, old_length + 1 + strlen(token));
+        memcpy(user_input_tokens + old_length + 1, token, strlen(token) - 1);
+#if DEBUG_ON
+        printf("user_input_tokens = %s\n", user_input_tokens);
+#endif
       }
     }
     arg_id++;
   }
 
-  // terminate program
-  // for accepted: exit(REJECTED);
-  // for dual-logic code accepted/rejected
+#if DEBUG_ON
+  printf("final user_input_tokens = %s\n", user_input_tokens);
+#endif
+
+  /* "answers" vs "user input" matching */
+
+  // Forward traversal of the list to match each token vs user_input_tokens
+  /*
+  for (np = accept_list_head.lh_first; np != NULL; np =np->entries.le_next)
+  {
+    #if DEBUG_ON
+    printf("%s: accept_list: matching  token: %s\n", __func__,
+           accept_list_head.lh_first->token);
+  }
+ */
+
+  // Terminate program: dual-logic exit code
   exit(program_inverse_type);
 }
-
-/*
- * //Forward traversal for (np = accept_list_.lh_first; np != NULL; np =
- * np->entries.le_next) np-> ...
- */
