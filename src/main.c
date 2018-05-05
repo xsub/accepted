@@ -302,7 +302,7 @@ int main(int argc, char **argv) {
       } else {
         int old_length = strlen(user_input_tokens);
         printf("old_length=%d\n", old_length);
-        user_input_tokens = user_input_tokens =
+        user_input_tokens =
             realloc(user_input_tokens, old_length + 1 + strlen(token));
         memcpy(user_input_tokens + old_length + 1, token, strlen(token) - 1);
 #if DEBUG_ON
