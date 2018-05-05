@@ -3,7 +3,7 @@
 
 ## Brief
 
-Installation of **Accepted** package equals to installation `accepted` & `rejected` duo, as is trivial as follows the **GNU Autotools** project guideliness and thus supports the well known `configure` && `make install` combo. 
+Installation of **Accepted** package equals to installation `accepted` & `rejected` duo (excluding manual that is). It is trivial as follows the **GNU Autotools** project guideliness and thus supports the well known `configure` && `make install` combo. 
 
 ## Installation steps
 
