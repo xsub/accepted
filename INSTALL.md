@@ -1,9 +1,9 @@
 
-# Installation guide for *accepted*
+# Installation guide for **Accepted**
 
 ## Brief
 
-Installation for accepted/rejected duo is trivial as it follows the autotools logic.
+Installation of **Accepted** package equals to installation `accepted` & `rejected` duo, as is trivial as follows the **GNU Autotools** project guideliness and thus supports the well known `configure` && `make install` combo. 
 
 ## Installation steps
 
@@ -14,5 +14,6 @@ make install
 ```
 
 ### Installation notes
+
 - Use `./configure --prefix=$TARGET_DIR` to specify your own install dir.
 - use `sudo` if configured with no prefix, this is allowing install to `/bin`.
