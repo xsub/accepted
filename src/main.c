@@ -93,20 +93,15 @@ struct token_list_entry {
 // Accepting/rejectring answers list single list declaration
 SLIST_HEAD(slisthead, token_list_entry) accept_head;
 
-/*
-print_list (void *list_head_p, char list_type)
-{
-    int i=0;
-    token_list_entry *entry_p=NULL;
+void print_list(void *list_head_p, char list_type) {
+  int i = 0;
+  token_list_entry_t *entry_p = NULL;
 
-    SLIST_FOREACH(entry_p, &head, entries) {
-        printf("Read1: %d\n", datap->value);
-    }
-    printf("\n");
-
-
+  SLIST_FOREACH(entry_p, &accept_head, entries) {
+    printf("arg_id: %d\n", entry_p->arg_id);
+  }
+  printf("\n");
 }
-*/
 
 /* Program cmd line arguments, the answer tokens (+<string> &<-string>) -
  * handlers */
@@ -312,18 +307,6 @@ int main(int argc, char **argv) {
   }
 #endif
 
-  /* "answers" vs "user input" matching */
-
-  // Forward traversal of the list to match each token vs user_input_tokens
-  /*
-  for (np = accept_list_head.lh_first; np != NULL; np =np->entries.le_next)
-  {
-    #if DEBUG_ON
-    printf("%s: accept_list: matching  token: %s\n", __func__,
-           accept_list_head.lh_first->token);
-  }
- */
-
   // cleanup
 
   // Cleanup lists
@@ -341,24 +324,13 @@ int main(int argc, char **argv) {
     free(entry);
   }
 
-/*
+/* TODO:
     // clean and remove the reject_list
-    while (reject_list_head.lh_first != NULL) {
-
         #if DEBUG_ON
     puts("Cleaning up reject_list data and removing list...");
   #endif
-    // here for the other list, the check is in place
-    if (NULL == &(reject_list_head.lh_first->token)) {
-#if DEBUG_ON
-      printf("%s: reject_list: removing token: %s\n", __func__,
-             reject_list_head.lh_first->token);
-#endif
-      free(&(reject_list_head.lh_first->token));
-    }
-    LIST_REMOVE(reject_list_head.lh_first, entries);
-  }
 */
+
 #if DEBUG_ON
   puts("Cleaning up temporary data...");
 #endif
