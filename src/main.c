@@ -62,7 +62,13 @@ int program_inverse_type = 0x37; // means unset
 
 /* Trivial error reporting */
 int errors = 0;
-#define REPORT_ERROR(msg) printf("ERROR(%3d) %s\n", errors++, msg)
+#define REPORT_ERROR(msg)                                                      \
+  { printf("ERROR(%3d) %s\n", errors++, msg); }
+#define FATAL_ERROR(msg)                                                       \
+  {                                                                            \
+    printf("ERROR(%3d) %s\n", errors++, msg);                                  \
+    exit(1);                                                                   \
+  }
 
 /* Default accepting and rejecting anwsers (confirmations/declines) */
 char *const stdyes[] = {"y", "yes", "yup", "yeah"};
@@ -72,50 +78,47 @@ char *const stdmin[] = {"y", "n"};
 // All tokens of user input (answer/response to prompt) combined in processing.
 char *user_input_tokens = NULL;
 
-/* Answers are stored in list having this entry as node; Once registered token
- * holds pointer to a answer. */
-struct entry {
-  char *token;
-  LIST_ENTRY(entry) entries;
-} * np;
-
 /* Definition of both lists and pointers to their heads */
-
-LIST_HEAD(accept_head, entry)
-accept_list_head = LIST_HEAD_INITIALIZER(accept_list_head);
-
 LIST_HEAD(reject_head, entry)
 reject_list_head = LIST_HEAD_INITIALIZER(reject_list_head);
+struct reject_head *reject_list_head_ptr;
 
-struct accept_head *accept_list_head_ptr;
-struct rejct_head *reject_list_head_ptr;
+// Accepting/rejecting answers list: single list entry
+typedef struct token_list_entry token_list_entry_t;
+struct token_list_entry {
+  int arg_id;
+  SLIST_ENTRY(token_list_entry) entries;
+};
 
-/* alloc_element(): This allocates and return new struct entry node */
-struct entry *alloc_element(char *token) {
-  struct entry *new_el_ptr = malloc(sizeof(struct entry));
+// Accepting/rejectring answers list single list declaration
+SLIST_HEAD(slisthead, token_list_entry) accept_head;
 
-  if (new_el_ptr) {
-    new_el_ptr->token = token;
-#if DEBUG_ON
-    printf("%s: allocation for token: %s, length: %d\n", __func__, token,
-           (int)0); // strlen(token));
-#endif
-  } else {
-    REPORT_ERROR("malloc error!");
-  }
-  return new_el_ptr;
+/*
+print_list (void *list_head_p, char list_type)
+{
+    int i=0;
+    token_list_entry *entry_p=NULL;
+
+    SLIST_FOREACH(entry_p, &head, entries) {
+        printf("Read1: %d\n", datap->value);
+    }
+    printf("\n");
+
+
 }
+*/
 
 /* Program cmd line arguments, the answer tokens (+<string> &<-string>) -
  * handlers */
 
 /* add_accepted(): register tokens for positive answer list */
-void add_accepted(char *token) {
+void add_accepted(int token_id, char **argv) {
 #if DEBUG_ON
-  printf("%s: token: %s,\n", __func__, token);
+  printf("id %s: token: (%d) '%s',\n", __func__, token_id, argv[token_id]);
 #endif
-  struct entry *new_el_ptr = alloc_element(token);
-  LIST_INSERT_HEAD(&accept_list_head, new_el_ptr, entries);
+  token_list_entry_t *new_el_ptr = malloc(sizeof(token_list_entry_t));
+  new_el_ptr->arg_id = token_id;
+  SLIST_INSERT_HEAD(&accept_head, new_el_ptr, entries);
 }
 
 /* add_rejected(): register tokens for positive answer list */
@@ -188,49 +191,8 @@ void parse_option_getopt_long(char **argv, int item_to_parse_idx) {
 #endif
 }
 
-void cleanup(void) {
+void cleanup(void);
 
-#if DEBUG_ON
-  puts("Cleaning up accept_list data and removing list...");
-#endif
-  // Cleanup lists
-  while (accept_list_head.lh_first != NULL) {
-// intentionally missing check if allocation was done, we ALWAYS allocate
-#if DEBUG_ON
-    printf("%s: accept_list: removing token: %s\n", __func__,
-           accept_list_head.lh_first->token);
-#endif
-    free(&(accept_list_head.lh_first->token));
-    LIST_REMOVE(accept_list_head.lh_first, entries);
-  }
-
-#if DEBUG_ON
-  puts("Cleaning up rejct_list data and removing list...");
-#endif
-  // clean and remove the reject_list
-  while (reject_list_head.lh_first != NULL) {
-    // here for the other list, the check is in place
-    if (NULL == &(reject_list_head.lh_first->token)) {
-#if DEBUG_ON
-      printf("%s: reject_list: removing token: %s\n", __func__,
-             reject_list_head.lh_first->token);
-#endif
-      free(&(reject_list_head.lh_first->token));
-    }
-    LIST_REMOVE(reject_list_head.lh_first, entries);
-  }
-
-#if DEBUG_ON
-  puts("Cleaning up temporary data...");
-#endif
-  // cleanup the temporary data
-  if (user_input_tokens)
-    free(user_input_tokens);
-
-#if DEBUG_ON
-  puts("Cleanup done.");
-#endif
-}
 /* Helper */
 int user_input_token_length = 0;
 
@@ -260,11 +222,12 @@ int main(int argc, char **argv) {
   }
 
   /* Init list data */
-  LIST_INIT(&accept_list_head);
   LIST_INIT(&reject_list_head);
 
+  SLIST_INIT(&accept_head);
+
   /* Since memory related operations started, register cleanup */
-  atexit(cleanup);
+  // atexit(cleanup);
 
   /*
    * Setup: Walk through argv (the program arguments) tokens, recognize
@@ -281,7 +244,7 @@ int main(int argc, char **argv) {
 
     if (!in_user_input_token) {
       if ('+' == token[0]) {
-        add_accepted(token);
+        add_accepted(arg_id, argv);
       } else if ('-' == token[0] && '-' != token[1]) {
         add_rejected(token);
       } else if ('-' == token[0] && '-' == token[1]) {
@@ -297,7 +260,7 @@ int main(int argc, char **argv) {
     if (in_user_input_token) {
 // use input token(s) processing
 #if DEBUG_ON
-      printf("User input processing mode set, token: %s\n", token);
+      printf("User input processing mode set, token: '%'s\n", token);
 #endif
 
       printf("token length=%d\n", strlen(token));
@@ -305,8 +268,29 @@ int main(int argc, char **argv) {
       //    realloc(user_input_tokens, user_input_token_length+ 1 +
       //    strlen(token));
 
-      user_input_tokens =
-          realloc(user_input_tokens, strlen(token) + user_input_token_length);
+      // user_input_tokens =
+      //    realloc(user_input_tokens, strlen(token) + user_input_token_length);
+
+      int token_temp_length = strlen(token) + user_input_token_length + 1;
+      char *user_input_tokens_temp = malloc(token_temp_length);
+
+      memset(user_input_tokens, '\0', token_temp_length);
+
+      if (!user_input_tokens_temp)
+        FATAL_ERROR("malloc error");
+
+      if (user_input_tokens) {
+        memcpy(user_input_tokens_temp, user_input_tokens,
+               strlen(user_input_tokens));
+        free(user_input_tokens);
+      }
+
+      // char * user_input_tokens_temp = realloc(user_input_tokens,
+      // strlen(token) + user_input_token_length);
+
+      user_input_tokens = user_input_tokens_temp; // now we have pointer
+                                                  // ressigned, can forget _temp
+                                                  // one
 
       memcpy(&(user_input_tokens[user_input_token_length]), token,
              strlen(token));
@@ -339,6 +323,52 @@ int main(int argc, char **argv) {
            accept_list_head.lh_first->token);
   }
  */
+
+  // cleanup
+
+  // Cleanup lists
+
+  while (!SLIST_EMPTY(&accept_head)) {
+
+#if DEBUG_ON
+    puts("Cleaning up accept_list data and removing list...");
+#endif
+
+    token_list_entry_t *entry = SLIST_FIRST(&accept_head);
+    printf("Token (id): (%d)\n", entry->arg_id);
+    printf("Token body: (%d) = '%s'\n", entry->arg_id, argv[entry->arg_id]);
+    SLIST_REMOVE_HEAD(&accept_head, entries);
+    free(entry);
+  }
+
+/*
+    // clean and remove the reject_list
+    while (reject_list_head.lh_first != NULL) {
+
+        #if DEBUG_ON
+    puts("Cleaning up reject_list data and removing list...");
+  #endif
+    // here for the other list, the check is in place
+    if (NULL == &(reject_list_head.lh_first->token)) {
+#if DEBUG_ON
+      printf("%s: reject_list: removing token: %s\n", __func__,
+             reject_list_head.lh_first->token);
+#endif
+      free(&(reject_list_head.lh_first->token));
+    }
+    LIST_REMOVE(reject_list_head.lh_first, entries);
+  }
+*/
+#if DEBUG_ON
+  puts("Cleaning up temporary data...");
+#endif
+  // cleanup the temporary data
+  if (user_input_tokens)
+    free(user_input_tokens);
+
+#if DEBUG_ON
+  puts("Cleanup done.");
+#endif
 
   // Terminate program: dual-logic exit code
   exit(program_inverse_type);
