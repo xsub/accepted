@@ -195,7 +195,10 @@ void parse_option_getopt_long(char **argv, int item_to_parse_idx) {
 #endif
 }
 
-void cleanup(void);
+// These ease comprehension of 'manual' arguments parsing part
+#define token_non_zero_length(t) (strlen(t) > 1)
+#define token_char_is_minus(t, pos) ('-' == token[pos])
+#define token_char_is_plus(t, pos) ('+' == token[pos])
 
 /* Helper */
 int user_input_token_length = 0;
@@ -242,15 +245,13 @@ int main(int argc, char **argv) {
   short arg_id = 1;
 
   while (arg_id < argc) {
+    // in this block token points to command line argument that we currently
+    // process
     char *token = argv[arg_id];
 
 #if DEBUG_ON
     printf("%s, processing token: '%s'\n", __func__, token);
 #endif
-
-#define token_non_zero_length(t) (strlen(t) > 1)
-#define token_char_is_minus(t, pos) ('-' == token[pos])
-#define token_char_is_plus(t, pos) ('+' == token[pos])
 
     if (!in_user_input_token) {
 
@@ -336,7 +337,7 @@ int main(int argc, char **argv) {
   i = 0;
   char *user_input_tokens_bb =
       user_input_tokens; // dont modify the user_input_tokens, free needs it
-  while (user_input_token_length-- > 1) {
+  while (--user_input_token_length) {
     printf("%d: %d, (%c), ", i++, *user_input_tokens_bb,
            *user_input_tokens_bb++);
   }
