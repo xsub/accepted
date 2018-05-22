@@ -335,7 +335,7 @@ int main(int argc, char **argv) {
   i = 0;
   char *user_input_tokens_bb =
       user_input_tokens; // dont modify the user_input_tokens, free needs it
-  while (user_input_token_length--) {
+  while (user_input_token_length-- > 1) {
     printf("%d: %d, (%c), ", i++, *user_input_tokens_bb,
            *user_input_tokens_bb++);
   }
