@@ -1,4 +1,5 @@
 2018-05-22  Pawel Suchanecki  <subdcc@gmail.com>
 
         * main.c: clear allocations from memleaks.
+		(commit 5934051b9fe893e9d88787451a60c0647d7bd2b6)
 
