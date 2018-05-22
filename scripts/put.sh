@@ -16,7 +16,12 @@ then
 fi
 rm -f ./rejected
 ./scripts/indent.sh
-./scripts/test.sh
+
+#socat -h > /dev/null && socat EXEC:"./scripts/test.sh",pty GOPEN:__TESTS_RESULTS.log 
+#socat -h || ( script /tmp/__TESTS_RESULTS.log; ./scripts/test.sh; echo "" );
+#socat -h > /dev/null ||
+LANG=C script -c ./scripts/test.sh __TESTS_RESULTS.log -e
+tail /tmp/__TESTS_RESULTS.log 
 read -p "review test results... commit?"
 git commit -a
 read -p "Push? "
