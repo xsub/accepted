@@ -332,16 +332,18 @@ int main(int argc, char **argv) {
   }
 
 #if DEBUG_ON
-  printf("final user_input_tokens = %s\n", user_input_tokens);
-  printf("byte by byte verification: ");
-  i = 0;
-  char *user_input_tokens_bb =
-      user_input_tokens; // dont modify the user_input_tokens, free needs it
-  while (--user_input_token_length) {
-    printf("%d: %d, (%c), ", i++, *user_input_tokens_bb,
-           *user_input_tokens_bb++);
+  if (user_input_tokens) {
+    printf("final user_input_tokens = %s\n", user_input_tokens);
+    printf("byte by byte verification: ");
+    i = 0;
+    char *user_input_tokens_bb =
+        user_input_tokens; // dont modify the user_input_tokens, free needs it
+    while (--user_input_token_length) {
+      printf("%d: %d, (%c), ", i++, *user_input_tokens_bb,
+             *user_input_tokens_bb++);
+    }
+    printf("\n");
   }
-  printf("\n");
 #endif
 
   // Clean up
