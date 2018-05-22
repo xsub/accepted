@@ -1,9 +1,10 @@
 /*
  * (C) 2018 Pawel Suchanecki; Kernel Cartel 1978;
  *
- * This software is dual licensed under BSD or GPL version 2; As user you
- * may select either version 2 of the GNU General Public License ("GPL")
- * or BSD license ("BSD"). This code is targetted to BSD & GNU/Linux.
+ * This software is multi-licensed under BSD or GPL version 2 or MIT;
+ * You may select either version 2 of the GNU General Public License ("GPL")
+ * or BSD license ("BSD") or MIT license ("MIT") depending on your needs.
+ * This code is targetting BSD, GNU/Linux and/or POSIX-compatible systems.
  *
  * SRC URI: https://github.com/xsub/accepted
  *
