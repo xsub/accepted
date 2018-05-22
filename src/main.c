@@ -63,10 +63,10 @@ int program_inverse_type = 0x37; // means unset
 /* Trivial error reporting */
 int errors = 0;
 #define REPORT_ERROR(msg)                                                      \
-  { printf("ERROR(%3d) %s\n", errors++, msg); }
+  { printf("ERROR(%s:%d)#%d: %s\n", __func__, __LINE__, errors++, msg); }
 #define FATAL_ERROR(msg)                                                       \
   {                                                                            \
-    printf("ERROR(%3d) %s\n", errors++, msg);                                  \
+    REPORT_ERROR(msg);                                                         \
     exit(1);                                                                   \
   }
 
@@ -78,10 +78,8 @@ char *const stdmin[] = {"y", "n"};
 // All tokens of user input (answer/response to prompt) combined in processing.
 char *user_input_tokens = NULL;
 
-/* Definition of both lists and pointers to their heads */
-LIST_HEAD(reject_head, entry)
-reject_list_head = LIST_HEAD_INITIALIZER(reject_list_head);
-struct reject_head *reject_list_head_ptr;
+// Accepting/rejecting answers list types (ids)
+enum { ACCEPT_LIST, REJECT_LIST };
 
 // Accepting/rejecting answers list: single list entry
 typedef struct token_list_entry token_list_entry_t;
@@ -90,8 +88,9 @@ struct token_list_entry {
   SLIST_ENTRY(token_list_entry) entries;
 };
 
-// Accepting/rejectring answers list single list declaration
-SLIST_HEAD(slisthead, token_list_entry) accept_head;
+// Accepting/rejecting answers list single list declaration
+SLIST_HEAD(a_slisthead, token_list_entry) accept_head;
+SLIST_HEAD(r_slisthead, token_list_entry) reject_head;
 
 void print_list(void *list_head_p, char list_type) {
   int i = 0;
@@ -107,15 +106,23 @@ void print_list(void *list_head_p, char list_type) {
  * handlers */
 
 /* add_accepted(): register tokens for positive answer list */
-void add_accepted(int token_id, char **argv) {
+void add_element_list(int list_id, int token_id, char **argv) {
 #if DEBUG_ON
   printf("id %s: token: (%d) '%s',\n", __func__, token_id, argv[token_id]);
 #endif
   token_list_entry_t *new_el_ptr = malloc(sizeof(token_list_entry_t));
   new_el_ptr->arg_id = token_id;
-  SLIST_INSERT_HEAD(&accept_head, new_el_ptr, entries);
+  switch (list_id) {
+  case ACCEPT_LIST:
+    SLIST_INSERT_HEAD(&accept_head, new_el_ptr, entries);
+    break;
+  case REJECT_LIST:
+    SLIST_INSERT_HEAD(&reject_head, new_el_ptr, entries);
+    break;
+  default:
+    FATAL_ERROR("Unkown list id!");
+  }
 }
-
 /* add_rejected(): register tokens for positive answer list */
 void add_rejected(char *token) {}
 
@@ -138,7 +145,8 @@ void help_exit(char err) {
       "insensitive).\n");
   printf("\n\n");
 
-  // 4 state output: output 2 states but they alter between accepted & rejected
+  // 4 state output: output 2 states but they alter between accepted &
+  // rejected
   err ? exit(program_inverse_type) : exit(program_type);
 }
 
@@ -190,7 +198,7 @@ void cleanup(void);
 
 /* Helper */
 int user_input_token_length = 0;
-
+int user_input_token_start = 0;
 int main(int argc, char **argv) {
 
   /* Get the binary image filename */
@@ -210,16 +218,16 @@ int main(int argc, char **argv) {
          (ACCEPTED == program_type) ? "accepted" : "rejected");
 #endif
 
-  /* Support proper exit code when no args provided, no answer can be accepting
+  /* Support proper exit code when no args provided, no answer can be
+   * accepting
    */
   if (argc < 2) {
     exit(program_inverse_type);
   }
 
   /* Init list data */
-  LIST_INIT(&reject_list_head);
-
   SLIST_INIT(&accept_head);
+  SLIST_INIT(&reject_head);
 
   /* Since memory related operations started, register cleanup */
   // atexit(cleanup);
@@ -228,8 +236,10 @@ int main(int argc, char **argv) {
    * Setup: Walk through argv (the program arguments) tokens, recognize
    * "answers", "long options" and "user input" and handle each type properly.
    */
+  int user_input_tokens_count = 0;
   char in_user_input_token = 0;
   short arg_id = 1;
+
   while (arg_id < argc) {
     char *token = argv[arg_id];
 
@@ -237,79 +247,104 @@ int main(int argc, char **argv) {
     printf("%s, processing token: '%s'\n", __func__, token);
 #endif
 
+#define token_non_zero_length(t) (strlen(t) > 1)
+#define token_char_is_minus(t, pos) ('-' == token[pos])
+#define token_char_is_plus(t, pos) ('+' == token[pos])
+
     if (!in_user_input_token) {
-      if ('+' == token[0]) {
-        add_accepted(arg_id, argv);
-      } else if ('-' == token[0] && '-' != token[1]) {
-        add_rejected(token);
-      } else if ('-' == token[0] && '-' == token[1]) {
+
+      if (token_char_is_plus(token, 0) && token_non_zero_length(token)) {
+
+        add_element_list(ACCEPT_LIST, arg_id, argv);
+
+      } else if (token_char_is_minus(token, 0) &&
+                 !token_char_is_minus(token, 1)) {
+
+        add_element_list(REJECT_LIST, arg_id, argv);
+
+      } else if (token_char_is_minus(token, 0) &&
+                 token_char_is_minus(token, 1)) {
+
         // parse the '--long-option' using temporary argv
         // Note: can pass "token prev" and skip this dummy
         char *const dummy_argv[2] = {binary_name, token};
         parse_option_getopt_long(dummy_argv, 0);
+
       } else {
-        in_user_input_token = 1; // now all processing is done below only
+        // Switch to processing user answer tokens (user input to prompt).
+        // Once
+        // this is set all processing of command line arguments is done below.
+        in_user_input_token = 1;
+        user_input_token_start = arg_id;
       }
     }
 
     if (in_user_input_token) {
 // use input token(s) processing
 #if DEBUG_ON
-      printf("User input processing mode set, token: '%'s\n", token);
+      printf("In user input processing mode, token: '%s'\n", token);
 #endif
-
-      printf("token length=%d\n", strlen(token));
-      // user_input_tokens =
-      //    realloc(user_input_tokens, user_input_token_length+ 1 +
-      //    strlen(token));
-
-      // user_input_tokens =
-      //    realloc(user_input_tokens, strlen(token) + user_input_token_length);
-
-      int token_temp_length = strlen(token) + user_input_token_length + 1;
-      char *user_input_tokens_temp = malloc(token_temp_length);
-
-      memset(user_input_tokens, '\0', token_temp_length);
-
-      if (!user_input_tokens_temp)
-        FATAL_ERROR("malloc error");
-
-      if (user_input_tokens) {
-        memcpy(user_input_tokens_temp, user_input_tokens,
-               strlen(user_input_tokens));
-        free(user_input_tokens);
-      }
-
-      // char * user_input_tokens_temp = realloc(user_input_tokens,
-      // strlen(token) + user_input_token_length);
-
-      user_input_tokens = user_input_tokens_temp; // now we have pointer
-                                                  // ressigned, can forget _temp
-                                                  // one
-
-      memcpy(&(user_input_tokens[user_input_token_length]), token,
-             strlen(token));
-
-      user_input_token_length += strlen(token);
-
-      printf("user_input_token_length = %d\n", user_input_token_length);
-#if DEBUG_ON
-      printf("user_input_tokens = %s\n", user_input_tokens);
-#endif
+      user_input_tokens_count++;
+      user_input_token_length += strlen(token) + 1;
     }
+
+    // move to next argument
     arg_id++;
+
+  } // while (arg_id < argc)
+
+#if DEBUG_ON
+  printf("user_input_tokens_count: %d\n", user_input_tokens_count);
+  printf("user_input_token_length: %d\n", user_input_token_length);
+#endif
+
+  int i;
+  if (user_input_token_length) {
+
+    user_input_tokens = malloc(user_input_token_length);
+
+    memset(user_input_tokens, '.', user_input_token_length);
+    user_input_tokens[user_input_token_length - 1] = '\0';
+
+    if (!user_input_tokens)
+      FATAL_ERROR("malloc error");
+
+    char *token = argv[user_input_token_start];
+
+    memcpy(user_input_tokens, token, strlen(token));
+
+    int offset = strlen(token);
+
+    for (i = 1; i < argc - user_input_token_start; i++) {
+
+      token = argv[user_input_token_start + i];
+
+      printf("Current user_input_tokens: '%s'\n", user_input_tokens);
+
+      memcpy(&(user_input_tokens[offset]), token, strlen(token));
+
+      printf("Updated user_input_tokens: '%s'\n", user_input_tokens);
+
+      offset += strlen(token) + 1;
+    }
   }
 
 #if DEBUG_ON
-  // printf("final user_input_tokens = %s\n", user_input_tokens);
+  printf("final user_input_tokens = %s\n", user_input_tokens);
+  printf("byte by byte verification: ");
+  i = 0;
+  char *user_input_tokens_bb =
+      user_input_tokens; // dont modify the user_input_tokens, free needs it
   while (user_input_token_length--) {
-    printf("%c", *user_input_tokens++);
+    printf("%d: %d, (%c), ", i++, *user_input_tokens_bb,
+           *user_input_tokens_bb++);
   }
+  printf("\n");
 #endif
 
-  // cleanup
+  // Clean up
 
-  // Cleanup lists
+  // Clean lists
 
   while (!SLIST_EMPTY(&accept_head)) {
 
@@ -324,19 +359,29 @@ int main(int argc, char **argv) {
     free(entry);
   }
 
-/* TODO:
-    // clean and remove the reject_list
-        #if DEBUG_ON
+  while (!SLIST_EMPTY(&accept_head)) {
+
+#if DEBUG_ON
     puts("Cleaning up reject_list data and removing list...");
-  #endif
-*/
+#endif
+
+    token_list_entry_t *entry = SLIST_FIRST(&reject_head);
+    printf("Token (id): (%d)\n", entry->arg_id);
+    printf("Token body: (%d) = '%s'\n", entry->arg_id, argv[entry->arg_id]);
+    SLIST_REMOVE_HEAD(&reject_head, entries);
+    free(entry);
+  }
 
 #if DEBUG_ON
   puts("Cleaning up temporary data...");
 #endif
   // cleanup the temporary data
-  if (user_input_tokens)
+  if (user_input_tokens) {
+    // user_input_tokens[user_input_token_length]='\0';
+    printf("user_input_tokens = %s\n", user_input_tokens);
+
     free(user_input_tokens);
+  }
 
 #if DEBUG_ON
   puts("Cleanup done.");
