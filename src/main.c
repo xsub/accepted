@@ -313,7 +313,7 @@ int main(int argc, char **argv) {
 
     memcpy(user_input_tokens, token, strlen(token));
 
-    int offset = strlen(token);
+    int offset = strlen(token) + 1;
 
     for (i = 1; i < argc - user_input_token_start; i++) {
 
@@ -359,7 +359,7 @@ int main(int argc, char **argv) {
     free(entry);
   }
 
-  while (!SLIST_EMPTY(&accept_head)) {
+  while (!SLIST_EMPTY(&reject_head)) {
 
 #if DEBUG_ON
     puts("Cleaning up reject_list data and removing list...");
