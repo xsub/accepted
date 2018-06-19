@@ -53,6 +53,14 @@
 const int ACCEPTED = EXIT_SUCCESS;
 const int REJECTED = EXIT_FAILURE;
 
+#if DEBUG_ON
+#define DBG_PRN(...)                                                           \
+  { printf(__VA_ARGS__); }
+#else
+#define DBG_PRN(...)                                                           \
+  {}
+#endif
+
 /* The operation mode (program_type) depends on binary (file) name */
 // making FILENAME_MAX_LEN a const int  here renders "variably modified" on
 // binary_name[]
@@ -72,9 +80,9 @@ int errors = 0;
   }
 
 /* Default accepting and rejecting anwsers (confirmations/declines) */
-char *const stdyes[] = {"y", "yes", "yup", "yeah"};
-char *const stdno[] = {"n", "no", "nah", "nope"};
-char *const stdmin[] = {"y", "n"};
+const char *stdyes[] = {"y", "yes", "yup", "yeah"};
+const char *stdno[] = {"n", "no", "nah", "nope"};
+const char *stdmin[] = {"y", "n"};
 
 // All tokens of user input (answer/response to prompt) combined in processing.
 char *user_input_tokens = NULL;
@@ -321,11 +329,11 @@ int main(int argc, char **argv) {
 
       token = argv[user_input_token_start + i];
 
-      printf("Current user_input_tokens: '%s'\n", user_input_tokens);
+      DBG_PRN("Current user_input_tokens: '%s'\n", user_input_tokens);
 
       memcpy(&(user_input_tokens[offset]), token, strlen(token));
 
-      printf("Updated user_input_tokens: '%s'\n", user_input_tokens);
+      DBG_PRN("Updated user_input_tokens: '%s'\n", user_input_tokens);
 
       offset += strlen(token) + 1;
     }
@@ -357,8 +365,11 @@ int main(int argc, char **argv) {
 #endif
 
     token_list_entry_t *entry = SLIST_FIRST(&accept_head);
+
+#if DEBUG_ON
     printf("Token (id): (%d)\n", entry->arg_id);
     printf("Token body: (%d) = '%s'\n", entry->arg_id, argv[entry->arg_id]);
+#endif
     SLIST_REMOVE_HEAD(&accept_head, entries);
     free(entry);
   }
@@ -370,8 +381,11 @@ int main(int argc, char **argv) {
 #endif
 
     token_list_entry_t *entry = SLIST_FIRST(&reject_head);
+
+#if DEBUG_ON
     printf("Token (id): (%d)\n", entry->arg_id);
     printf("Token body: (%d) = '%s'\n", entry->arg_id, argv[entry->arg_id]);
+#endif
     SLIST_REMOVE_HEAD(&reject_head, entries);
     free(entry);
   }
@@ -381,8 +395,10 @@ int main(int argc, char **argv) {
 #endif
   // cleanup the temporary data
   if (user_input_tokens) {
-    // user_input_tokens[user_input_token_length]='\0';
+// user_input_tokens[user_input_token_length]='\0';
+#if DEBUG_ON
     printf("user_input_tokens = %s\n", user_input_tokens);
+#endif
 
     free(user_input_tokens);
   }

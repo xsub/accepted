@@ -1,10 +1,9 @@
-Script started on Tue May 22 17:10:02 2018
+Script started on Tue Jun 19 19:28:11 2018
 [1G   accepted: no arguments exit code should be 1[K[143G1/8[2G[1G ✓ accepted: no arguments exit code should be 1[K
 [0m[1G   rejected: no arguments, exit code should be 0[K[143G2/8[2G[1G ✓ rejected: no arguments, exit code should be 0[K
 [0m[1G   accepted: test the most simplistic case[K[143G3/8[2G[1G[31;1m ✗ accepted: test the most simplistic case[K
 [0m[31;22m   (in test file tests/initial-tests.bats, line 23)
 [0m[31;22m     `[ "$status" -eq $EXIT_SUCCESS ]' failed
-[0m[31;22m     Token (id): (2)
 [0m[1G   accepted: --std-yes without input, should EXIT_FAILURE[K[143G4/8[2G[1G ✓ accepted: --std-yes without input, should EXIT_FAILURE[K
 [0m[1G   rejected: --std-no without input, should EXIT_SUCCESS[K[143G5/8[2G[1G ✓ rejected: --std-no without input, should EXIT_SUCCESS[K
 [0m[1G   accepted: --std-yes with proper user input: 'yeah'[K[143G6/8[2G[1G[31;1m ✗ accepted: --std-yes with proper user input: 'yeah'[K
@@ -16,4 +15,4 @@ Script started on Tue May 22 17:10:02 2018
 [0m
 8 tests, 2 failures
 
-Script done on Tue May 22 17:10:02 2018
+Script done on Tue Jun 19 19:28:11 2018
